@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 추가 사용자 정의 스타일 */
+.container {
+  @apply mx-auto max-w-7xl;
+}
+
+.button {
+  @apply bg-brand-blue text-white font-bold py-2 px-4 rounded;
+}
+
+.button:hover {
+  @apply bg-blue-700;
+}
