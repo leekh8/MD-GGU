@@ -53,4 +53,5 @@
 
 - **CI/CD 파이프라인**: 지속적인 통합과 배포를 자동화하는 파이프라인 구축.
 - **문서화**: 시스템 아키텍처, API 문서, 사용자 매뉴얼 등을 작성하여 프로그램 사용과 유지 보수를 지원.
-  ![footer](https://capsule-render.vercel.app/api?type=waving&color=auto&height=150&section=footer&fontSize=90)
+
+![footer](https://capsule-render.vercel.app/api?type=waving&color=auto&height=150&section=footer&fontSize=90)
