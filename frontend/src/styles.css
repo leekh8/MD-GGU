@@ -8,9 +8,18 @@
 }
 
 .button {
-  @apply bg-brand-blue text-white font-bold py-2 px-4 rounded;
+  @apply bg-brand-blue text-white font-bold py-2 px-4 rounded hover:bg-blue-700;
 }
 
-.button:hover {
+.hover\:bg-blue-700:hover {
   @apply bg-blue-700;
+}
+
+/* 추가된 배경 및 경계선 스타일 */
+.background {
+  @apply bg-brand-grey;
+}
+
+.border-box {
+  @apply border-2 border-brand-grey;
 }
