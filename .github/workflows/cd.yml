@@ -16,42 +16,42 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "16.x"
+          node-version: "20.11.1"
       - name: Install dependencies and build
         run: |
           cd frontend
-          npm install
+          npm ci
           npm run build
       - name: Deploy to hosting service
         run: |
           # 프론트엔드 배포 스크립트 추가
 
-  deploy-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Java
-        uses: actions/setup-java@v2
-        with:
-          java-version: "11"
-      - name: Deploy Java Application
-        run: |
-          cd backend/java
-          ./gradlew deploy
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-      - name: Deploy Python Application
-        run: |
-          cd backend/python
-          # Python 배포 스크립트 추가
+  # deploy-backend:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Set up Java
+  #       uses: actions/setup-java@v2
+  #       with:
+  #         java-version: "11"
+  #     - name: Deploy Java Application
+  #       run: |
+  #         cd backend/java
+  #         ./gradlew deploy
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: "3.9"
+  #     - name: Deploy Python Application
+  #       run: |
+  #         cd backend/python
+  #         # Python 배포 스크립트 추가
 
-  update-database:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Update Database
-        run: |
-          cd database
-          # 데이터베이스 업데이트 스크립트 추가
+  # update-database:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Update Database
+  #       run: |
+  #         cd database
+  #         # 데이터베이스 업데이트 스크립트 추가
