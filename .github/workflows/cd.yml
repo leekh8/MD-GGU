@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies and build
         run: |
           cd frontend
-          npm ci
+          npm install
           npm run build
       - name: Deploy to hosting service
         run: |
