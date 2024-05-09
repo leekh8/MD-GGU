@@ -8,6 +8,8 @@ import DocumentList from "./components/DocumentList";
 import DocumentDetails from "./components/DocumentDetails";
 // import Navbar from "./components/Navbar";
 import HomePage from "./components/Home";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 
 const App = () => (
   <Router>
@@ -15,6 +17,8 @@ const App = () => (
     {/* <Navbar /> */}
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
       <Route path="/documents" element={<DocumentList />} />
       <Route path="/documents/:id" element={<DocumentDetails />} />
       <Route path="/editor" element={<Editor />} />
