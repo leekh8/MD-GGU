@@ -1,14 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
 
 const HomePage = () => {
+  const { user } = useAuth();
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center text-brand-blue mb-6">
         Welcome to MD GGU
       </h1>
       <p className="text-xl text-center text-brand-grey mb-8">
-        Explore our features to optimize your markdown documents!
+        {user
+          ? `Hello, ${user.username}! Explore our features.`
+          : "Explore our features to optimize your markdown documents!"}
       </p>
       <div className="flex justify-center gap-4">
         <Link
