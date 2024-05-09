@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 추가 사용자 정의 스타일 */
+/* Base container and layout styling */
 .container {
   @apply mx-auto max-w-7xl;
 }
@@ -15,11 +15,79 @@
   @apply bg-blue-700;
 }
 
-/* 추가된 배경 및 경계선 스타일 */
 .background {
   @apply bg-brand-grey;
 }
 
 .border-box {
   @apply border-2 border-brand-grey;
+}
+
+/* Custom styles for markdown content */
+.prose {
+  /* Headers */
+  h1 {
+    @apply text-3xl font-bold my-4;
+  }
+  h2 {
+    @apply text-2xl font-bold my-3;
+  }
+  h3 {
+    @apply text-xl font-bold my-2;
+  }
+  h4,
+  h5,
+  h6 {
+    @apply text-lg font-semibold my-1;
+  }
+
+  /* Paragraphs */
+  p {
+    @apply my-2;
+  }
+
+  /* Lists */
+  ul {
+    @apply list-disc pl-5 my-2;
+  }
+  ol {
+    @apply list-decimal pl-5 my-2;
+  }
+  li {
+    @apply my-1;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    @apply italic border-l-4 border-brand-grey pl-4 my-2;
+  }
+
+  /* Code styling */
+  code {
+    @apply bg-gray-100 rounded p-1 font-mono text-sm;
+  }
+  pre {
+    @apply bg-gray-200 p-2 rounded overflow-x-auto;
+  }
+
+  /* Tables */
+  table {
+    @apply min-w-full divide-y divide-gray-300;
+  }
+  th {
+    @apply bg-gray-200 p-2 text-left font-semibold;
+  }
+  td {
+    @apply bg-white p-2;
+  }
+
+  /* Links */
+  a {
+    @apply text-brand-blue underline;
+  }
+
+  /* Images */
+  img {
+    @apply mx-auto my-4 max-w-full;
+  }
 }
