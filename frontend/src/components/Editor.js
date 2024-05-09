@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import rehypeKatex from "rehype-katex";
 import TextareaAutosize from "react-textarea-autosize";
 import { ClipboardDocumentIcon, CheckIcon } from "@heroicons/react/24/outline";
 
 const Editor = () => {
   const [content, setContent] = useState("");
-  const [style, setStyle] = useState("creative");
+  const [style, setStyle] = useState("default");
   const [copySuccess, setCopySuccess] = useState(false);
 
   const handleChange = (e) => {
@@ -18,20 +19,8 @@ const Editor = () => {
     setStyle(e.target.value);
   };
 
-  const transformText = (text) => {
-    switch (style) {
-      case "creative":
-        return text.toUpperCase();
-      case "professional":
-        return text.toLowerCase();
-      default:
-        return text;
-    }
-  };
-
   const handleCopy = () => {
-    const textToCopy = transformText(content);
-    navigator.clipboard.writeText(textToCopy);
+    navigator.clipboard.writeText(content);
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2000);
   };
@@ -47,6 +36,7 @@ const Editor = () => {
             onChange={handleStyleChange}
             className="p-2 border-brand-grey rounded shadow mr-4"
           >
+            <option value="default">Default</option>
             <option value="creative">Creative</option>
             <option value="professional">Professional</option>
           </select>
@@ -75,10 +65,11 @@ const Editor = () => {
         />
         <div className="md:flex-1 border-2 border-brand-grey rounded shadow-strong p-4 min-h-[30rem] overflow-auto">
           <ReactMarkdown
+            className="prose"
+            remarkPlugins={[remarkGfm, rehypeKatex]}
             rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
           >
-            {transformText(content)}
+            {content}
           </ReactMarkdown>
         </div>
       </div>
