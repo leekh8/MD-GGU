@@ -1,0 +1,30 @@
+name: Backend Continuous Deployment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Oracle JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: "22"
+          distribution: "oracle"
+      - name: Deploy Java Application
+        run: |
+          cd backend/mdggu-backend
+          ./gradlew deploy
+      # - name: Set up Python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: "3.9"
+      # - name: Deploy Python Application
+      #   run: |
+      #     cd backend/python
+      #     # Python 배포 스크립트 추가

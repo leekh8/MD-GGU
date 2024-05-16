@@ -1,0 +1,38 @@
+name: Backend Continuous Integration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+
+jobs:
+  backend-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Oracle JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: "22"
+          distribution: "oracle"
+      - name: Build Java Backend
+        run: |
+          cd backend/mdggu-backend
+          ./gradlew build
+      # - name: Set up Python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: "3.9"
+      # - name: Install Python dependencies
+      #   run: |
+      #     cd backend/python
+      #     pip install -r requirements.txt
+      # - name: Run Python tests
+      #   run: |
+      #     cd backend/python
+      #     # Python 테스트 명령어 추가
