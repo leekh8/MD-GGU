@@ -15,6 +15,45 @@ const Editor = () => {
     setContent(e.target.value);
   };
 
+  const handleKeyDown = (e) => {
+    const { key, target } = e;
+    const { selectionStart, selectionEnd, value } = target;
+
+    if (key === "Enter") {
+      const line = value.substring(0, selectionStart).split("\n").pop();
+      if (line === "- ") {
+        e.preventDefault(); // 빈 리스트 항목에서 엔터를 눌렀을 때 기본 동작 방지
+        const before = value.substring(0, selectionStart - 2); // '- '와 줄바꿈 문자 제거
+        const after = value.substring(selectionEnd);
+        const newValue = `${before}${after}`;
+        setContent(newValue);
+        setTimeout(() => {
+          target.selectionStart = target.selectionEnd = before.length;
+        }, 0);
+      } else if (line.startsWith("- ")) {
+        e.preventDefault();
+        const before = value.substring(0, selectionStart);
+        const after = value.substring(selectionEnd);
+        const newValue = `${before}\n- ${after}`;
+        setContent(newValue);
+        setTimeout(() => {
+          target.selectionStart = target.selectionEnd = selectionStart + 3;
+        }, 0);
+      }
+    } else if (key === "*" && selectionStart !== selectionEnd) {
+      e.preventDefault();
+      const before = value.substring(0, selectionStart);
+      const selection = value.substring(selectionStart, selectionEnd);
+      const after = value.substring(selectionEnd);
+      const newValue = `${before}*${selection}*${after}`;
+      setContent(newValue);
+      setTimeout(() => {
+        target.selectionStart = selectionStart + 1;
+        target.selectionEnd = selectionEnd + 1;
+      }, 0);
+    }
+  };
+
   const handleStyleChange = (e) => {
     setStyle(e.target.value);
   };
@@ -24,7 +63,7 @@ const Editor = () => {
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2000);
   };
-
+  // TODO: 저장 기능 추가
   return (
     <div className="container mx-auto px-4 py-4">
       <div className="flex justify-between items-center mb-4">
@@ -59,6 +98,7 @@ const Editor = () => {
         <TextareaAutosize
           className="md:flex-1 border-2 border-brand-grey rounded shadow-strong p-4 min-h-[30rem] overflow-auto resize-none"
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           value={content}
           placeholder="Type your markdown here..."
           minRows={10}
