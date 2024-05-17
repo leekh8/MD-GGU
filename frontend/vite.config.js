@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [
     react(),
     babel({
-      babelHelpers: "bundled",
-      presets: ["@babel/preset-react"],
+      babelHelpers: "runtime",
+      plugins: ["@babel/plugin-transform-runtime"],
     }),
   ],
   test: {
