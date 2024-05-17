@@ -14,16 +14,19 @@ jobs:
   frontend-ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          path: MD-GGU
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: "20.11.1"
       - name: Install dependencies
         run: |
-          cd frontend
+          cd md-ggu/frontend  # 정확한 경로로 이동
           npm install
       - name: Run tests
         run: |
-          cd frontend
+          cd md-ggu/frontend  # 정확한 경로로 이동
           npm test
