@@ -6,7 +6,6 @@ import Header from "./components/Header";
 import Editor from "./components/Editor";
 import DocumentList from "./components/DocumentList";
 import DocumentDetails from "./components/DocumentDetails";
-// import Navbar from "./components/Navbar";
 import HomePage from "./components/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -14,7 +13,6 @@ import SignupPage from "./pages/SignupPage";
 const App = () => (
   <Router>
     <Header />
-    {/* <Navbar /> */}
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
