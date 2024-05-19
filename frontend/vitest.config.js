@@ -6,9 +6,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: "./src/setupTests.js",
-    transformMode: {
-      web: [/.[jt]sx?/],
+    transform: {
+      "^.+\\.jsx?$": "babel-jest",
     },
+  },
+  esbuild: {
+    jsxInject: `import React from 'react'`,
   },
 });
