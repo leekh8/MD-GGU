@@ -16,7 +16,6 @@ const SignupPage = () => {
       setError("All fields are required");
       return;
     }
-    // TODO: 회원가입 로직 구현
     try {
       register(username, email, password);
       navigate("/"); // 회원가입 후 홈페이지로 리디렉션
