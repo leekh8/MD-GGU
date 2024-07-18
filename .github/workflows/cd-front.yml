@@ -15,11 +15,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "20.11.1"
-      - name: Install dependencies and build
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: frontend
+          push: true
+          tags: ${{ github.repository }}:frontend-latest
+      - name: Deploy Frontend Application
         run: |
-          cd frontend
-          npm install
-          npm run build
-      - name: Deploy to hosting service
-        run: |
-          # 프론트엔드 배포 스크립트 추가
+          docker run -d -p 3000:3000 ${{ github.repository }}:frontend-latest
