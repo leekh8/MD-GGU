@@ -5,6 +5,10 @@ import { useAuth } from "./AuthProvider";
 const Header = () => {
   const { user, logout } = useAuth();
 
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <header className="bg-brand-blue text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -19,7 +23,7 @@ const Header = () => {
                 Home
               </Link>
             </li>
-            {user ? (
+            {user.username !== "Guest" ? (
               <>
                 <li>
                   <Link
