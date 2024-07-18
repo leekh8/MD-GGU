@@ -19,6 +19,7 @@ jobs:
         uses: docker/build-push-action@v4 # Docker 이미지 빌드 및 push
         with:
           context: frontend # Dockerfile이 위치한 경로 명시
+          file: frontend/Dockerfile
           push: true
           tags: ${{ github.repository }}:frontend-latest
       - name: Deploy Frontend Application
