@@ -5,22 +5,21 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./styles.css";
-// import { AuthProvider } from "./components/AuthProvider";
+import { AuthProvider } from "./components/AuthProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    {/* <AuthProvider> */}
-    <App />
-    {/* </AuthProvider> */}
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </React.StrictMode>
 );
 
 // 성능 측정을 위한 reportWebVitals 함수 활용
-reportWebVitals(console.log);
-
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+console.log("src/index.jsx");
+reportWebVitals(console.log);
