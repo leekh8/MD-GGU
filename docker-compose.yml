@@ -11,11 +11,15 @@ services:
       - backend
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000"
+      - "3000:3000"
 
   backend:
-    build: ./backend/mdggu-backend
+    build:
+      context: ./backend/mdggu-backend
+      dockerfile: Dockerfile
     ports:
-      - "8080"
+      - "8080:8080"
