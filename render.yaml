@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: mdggu
-    env: docker
-    dockerfilePath: ./docker-compose.yml
-    dockerContext: .
-    buildCommand: docker-compose build
-    startCommand: docker-compose up
