@@ -12,7 +12,9 @@ const Header = () => {
   return (
     <header className="bg-brand-blue text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-lg md:text-2xl font-bold font-sans">MD GGU</h1>
+        <Link to="/" className="text-lg md:text-2xl font-bold font-sans">
+          MD GGU
+        </Link>
         <nav>
           <ul className="flex space-x-4">
             <li>
