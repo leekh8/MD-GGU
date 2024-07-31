@@ -3,7 +3,7 @@ FROM maven:3.8.1-openjdk-17 AS builder
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -q
 
 # Run 단계
 FROM openjdk:17-jdk-slim
