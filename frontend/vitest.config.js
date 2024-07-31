@@ -3,10 +3,6 @@ import react from "@vitejs/plugin-react";
 
 const port = parseInt(process.env.VITE_PORT);
 
-console.log("Vitest Configuration:");
-console.log("Port:", port);
-console.log("Rollup input:", "./src/index.jsx");
-
 export default defineConfig({
   plugins: [react()],
   test: {
