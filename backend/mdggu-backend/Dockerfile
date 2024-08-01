@@ -1,13 +1,13 @@
 # Build 단계
-FROM maven:3.8.1-openjdk-17 AS builder
+FROM gradle:7.5.1-jdk17 AS builder
 WORKDIR /app
-COPY pom.xml .
+COPY build.gradle settings.gradle ./
 COPY src ./src
-RUN mvn clean package -DskipTests -q
+RUN gradle build --no-daemon
 
 # Run 단계
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=builder /app/target/mdggu-backend-1.0-SNAPSHOT.jar app.jar
+COPY --from=builder /app/build/libs/mdggu-backend-1.0-SNAPSHOT.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
