@@ -1,14 +1,14 @@
-// Spring Security 설정
 package com.mdggu.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
@@ -31,12 +31,17 @@ public class SecurityConfig {
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .csrf().disable()
-                .authorizeRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()  // 인증 관련 엔드포인트는 모두 접근 가능
-                        .requestMatchers("/api/v1/documents/**").permitAll()  // 문서 관련 엔드포인트도 모두 접근 가능
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(requestMatcher("/api/v1/auth/**")).permitAll()  // 인증 관련 엔드포인트는 모두 접근 가능
+                        .requestMatchers(requestMatcher("/api/v1/documents/**")).permitAll()  // 문서 관련 엔드포인트도 모두 접근 가능
                         .anyRequest().authenticated()  // 그 외의 요청은 인증 필요
                 );
         return http.build();
+    }
+
+    private RequestMatcher requestMatcher(String pattern) {
+        // 새로운 안전한 RequestMatcher 구현
+        return new CustomRequestMatcher(pattern);
     }
 
     @Bean
