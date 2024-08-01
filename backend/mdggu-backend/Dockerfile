@@ -1,7 +1,7 @@
 # Build 단계
 FROM gradle:7.5.1-jdk17 AS builder
 WORKDIR /app
-COPY build.gradle settings.gradle ./
+COPY build.gradle ./
 COPY src ./src
 RUN gradle build --no-daemon
 
