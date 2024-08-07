@@ -6,7 +6,6 @@ plugins {
 
 group = 'com.mdggu'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
@@ -24,4 +23,15 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+bootRun {
+    systemProperties = System.properties
+    doFirst {
+        properties.each { key, value ->
+            if (key.startsWith("SPRING_")) {
+                systemProperty key, value
+            }
+        }
+    }
 }
