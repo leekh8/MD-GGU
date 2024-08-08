@@ -1,12 +1,12 @@
-// 백엔드와 통신하기 위한 함수
+// 프론트엔드와 백엔드 간의 통신 담당
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8080/api";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Authentication-related functions
 export function register(username, email, password) {
   return axios
-    .post("http://localhost:8080/api/auth/register", {
+    .post(`${BACKEND_URL}/api/auth/register`, {
       username,
       email,
       password,
@@ -18,32 +18,32 @@ export function register(username, email, password) {
 }
 
 export function login(username, password) {
-  return axios.post(`${API_BASE_URL}/auth/login`, {
+  return axios.post(`${BACKEND_URL}/auth/login`, {
     username,
     password,
   });
 }
 
 export function logout() {
-  return axios.post(`${API_BASE_URL}/auth/logout`);
+  return axios.post(`${BACKEND_URL}/auth/logout`);
 }
 
 export function getAllDocuments() {
-  return axios.get(`${API_BASE_URL}/documents`);
+  return axios.get(`${BACKEND_URL}/documents`);
 }
 
 export function getDocumentById(id) {
-  return axios.get(`${API_BASE_URL}/documents/${id}`);
+  return axios.get(`${BACKEND_URL}/documents/${id}`);
 }
 
 export function createDocument(document) {
-  return axios.post(`${API_BASE_URL}/documents`, document);
+  return axios.post(`${BACKEND_URL}/documents`, document);
 }
 
 export function updateDocument(id, document) {
-  return axios.put(`${API_BASE_URL}/documents/${id}`, document);
+  return axios.put(`${BACKEND_URL}/documents/${id}`, document);
 }
 
 export function deleteDocument(id) {
-  return axios.delete(`${API_BASE_URL}/documents/${id}`);
+  return axios.delete(`${BACKEND_URL}/documents/${id}`);
 }
