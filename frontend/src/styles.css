@@ -8,7 +8,15 @@
 }
 
 .button {
-  @apply bg-brand-blue text-white font-bold py-2 px-4 rounded hover:bg-blue-700;
+  @apply bg-brand-blue text-white font-bold py-2 px-4 rounded hover:bg-brand-blue-light;
+}
+
+.background {
+  @apply bg-neutral-gray;
+}
+
+.border-box {
+  @apply border-2 border-neutral-gray-dark;
 }
 
 .hover\:bg-blue-700:hover {
@@ -16,11 +24,11 @@
 }
 
 .background {
-  @apply bg-brand-grey;
+  @apply bg-brand-gray;
 }
 
 .border-box {
-  @apply border-2 border-brand-grey;
+  @apply border-2 border-brand-gray;
 }
 
 /* Custom styles for markdown content */
@@ -59,23 +67,23 @@
 
   /* Blockquotes */
   blockquote {
-    @apply italic border-l-4 border-brand-grey pl-4 my-2;
+    @apply italic border-l-4 border-brand-gray pl-4 my-2;
   }
 
   /* Code styling */
   code {
-    @apply bg-gray-100 rounded p-1 font-mono text-sm;
+    @apply bg-neutral-gray-light rounded p-1 font-mono text-sm;
   }
   pre {
-    @apply bg-gray-200 p-2 rounded overflow-x-auto;
+    @apply bg-neutral-gray rounded p-2 rounded overflow-x-auto;
   }
 
   /* Tables */
   table {
-    @apply min-w-full divide-y divide-gray-300;
+    @apply min-w-full divide-y divide-neutral-gray;
   }
   th {
-    @apply bg-gray-200 p-2 text-left font-semibold;
+    @apply bg-neutral-gray-light p-2 text-left font-semibold;
   }
   td {
     @apply bg-white p-2;
@@ -83,7 +91,7 @@
 
   /* Links */
   a {
-    @apply text-brand-blue underline;
+    @apply text-info-blue underline;
   }
 
   /* Images */
