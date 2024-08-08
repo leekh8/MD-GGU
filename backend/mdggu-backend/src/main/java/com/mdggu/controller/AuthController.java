@@ -16,16 +16,17 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userService.checkIfUserExist(user.getUsername())) {
-            return ResponseEntity.badRequest().body("Username is already taken!");
+        if (userService.checkIfUserExist(user.getEmail())) { // email 중복 체크
+            return ResponseEntity.badRequest().body("Email is already taken!");
         }
-        userService.registerNewUser(user.getUsername(), user.getPassword());
+        userService.registerNewUser(user.getEmail(), user.getPassword()); // email 사용
         return ResponseEntity.ok("User registered successfully!");
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
-        // 로그인 로직 (실제로는 Spring Security 사용)
+        // 실제 로그인 로직은 Spring Security에서 처리될 예정
+        //TODO: 이메일과 비밀번호를 사용하여 사용자를 인증하는 로직 구현
         return ResponseEntity.ok("User logged in successfully!");
     }
 

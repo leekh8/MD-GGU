@@ -19,21 +19,24 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User registerNewUser(String username, String password) {
+    public User registerNewUser(String email, String password) {
+        if (checkIfUserExist(email)) {// 이메일 중복 체크
+            throw new IllegalArgumentException("Email is already taken!");
+        }
         User user = new User();
-        user.setUsername(username);
+        user.setUsername(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(UserRole.USER);
         return userRepository.save(user);
     }
 
-    public boolean checkIfUserExist(String username) {
-        return userRepository.findByUsername(username) != null;
+    public boolean checkIfUserExist(String email) {
+        return userRepository.findByEmail(email) != null; // 이메일로 중복 체크
     }
 
     public User getCurrentUser() {
-        String username = getUsernameFromSecurityContext();
-        return userRepository.findByUsername(username);
+        String email = getEmailFromSecurityContext();
+        return userRepository.findByEmail(email); // 이메일로 사용자 검색
     }
 
     public void updateCurrentUser(User updatedUser) {
@@ -48,9 +51,10 @@ public class UserService {
         userRepository.delete(currentUser);
     }
 
-    private String getUsernameFromSecurityContext() {
+    private String getEmailFromSecurityContext() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
+            // TODO: 이메일을 가져오도록 수정
             return ((UserDetails) principal).getUsername();
         } else {
             return principal.toString();
