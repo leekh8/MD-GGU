@@ -3,20 +3,20 @@ import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // 에러 메시지 상태
   const auth = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!username || !password) {
+    if (!email || !password) {
       setError("All fields are required");
       return;
     }
     try {
-      auth.login(username, password);
+      await auth.login(email, password);
       navigate("/"); // Redirect to home after login
     } catch (e) {
       setError("Login failed: " + e.message); // 예외 처리와 에러 메시지 설정
@@ -33,17 +33,17 @@ const LoginPage = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
-            htmlFor="username"
+            htmlFor="email"
             className="block text-sm font-medium text-gray-700"
           >
-            Username
+            Email
           </label>
           <input
-            type="text"
-            id="username"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email"
+            id="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
           />
         </div>
