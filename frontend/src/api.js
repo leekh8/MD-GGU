@@ -1,7 +1,7 @@
 // 프론트엔드와 백엔드 간의 통신 담당
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 // Authentication-related functions
 export function register(username, email, password) {
