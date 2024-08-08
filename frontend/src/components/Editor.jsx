@@ -5,8 +5,10 @@ import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 import TextareaAutosize from "react-textarea-autosize";
 import { ClipboardDocumentIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 const Editor = () => {
+  const { t } = useTranslation();
   const [content, setContent] = useState("");
   const [style, setStyle] = useState("default");
   const [copySuccess, setCopySuccess] = useState(false);
@@ -68,16 +70,16 @@ const Editor = () => {
     <div className="container mx-auto px-4 py-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold font-sans text-brand-blue">
-          Markdown Editor
+          {t("markdown editor")}
         </h1>
         <div className="flex items-center">
           <select
             onChange={handleStyleChange}
             className="p-2 border-brand-grey rounded shadow mr-4"
           >
-            <option value="default">Default</option>
-            <option value="creative">Creative</option>
-            <option value="professional">Professional</option>
+            <option value="default">{t("default")}</option>
+            <option value="creative">{t("creative")}</option>
+            <option value="professional">{t("professional")}</option>
           </select>
           <button
             onClick={handleCopy}

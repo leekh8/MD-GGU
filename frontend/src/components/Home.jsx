@@ -1,8 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
+import { useTranslation } from "react-i18next";
 
 const HomePage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   if (!user) {
@@ -12,7 +14,7 @@ const HomePage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center text-brand-blue mb-6">
-        Welcome to MD GGU
+        {t("welcome to mdggu")}
       </h1>
       <p className="text-xl text-center text-brand-grey mb-8">
         {user.username !== "Guest"
@@ -24,13 +26,13 @@ const HomePage = () => {
           to="/documents"
           className="bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-strong"
         >
-          View Documents
+          {t("view documents")}
         </Link>
         <Link
           to="/editor"
           className="bg-brand-yellow hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow-strong"
         >
-          Start Editing
+          {t("start editing")}
         </Link>
       </div>
       <div className="mt-8 text-center">

@@ -1,19 +1,26 @@
 // ReactDOM을 통해 앱 마운트
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./styles.css";
 import { AuthProvider } from "./components/AuthProvider";
+import "./i18n"; // i18n 초기화 파일 import
+import { I18nextProvider } from "react-i18next";
+import i18n from "./i18n"; // 초기화된 i18n 인스턴스 import
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <I18nextProvider i18n={i18n}>
+      <Suspense fallback={<div>Loading translations...</div>}>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </Suspense>
+    </I18nextProvider>
   </React.StrictMode>
 );
 

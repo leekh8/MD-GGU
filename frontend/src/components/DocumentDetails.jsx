@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getDocumentById, updateDocument } from "../api";
+import { useTranslation } from "react-i18next";
 
 function DocumentDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ function DocumentDetail() {
             onClick={handleUpdate}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Save
+            {t("save")}
           </button>
         </div>
       ) : (
@@ -69,7 +71,7 @@ function DocumentDetail() {
             onClick={() => setEditMode(true)}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Edit
+            {t("edit")}
           </button>
         </div>
       )}

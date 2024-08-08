@@ -1,8 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Header = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
 
   if (!user) {
@@ -13,16 +16,16 @@ const Header = () => {
     <header className="bg-brand-blue text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-lg md:text-2xl font-bold font-sans">
-          MD GGU
+          {t("mdggu")}
         </Link>
-        <nav>
+        <nav className="items-center">
           <ul className="flex space-x-4">
             <li>
               <Link
                 to="/"
                 className="hover:text-brand-yellow transition-colors duration-300"
               >
-                Home
+                {t("home")}
               </Link>
             </li>
             {user.username !== "Guest" ? (
@@ -32,7 +35,7 @@ const Header = () => {
                     to="/documents"
                     className="hover:text-brand-yellow transition-colors duration-300"
                   >
-                    Documents
+                    {t("documents")}
                   </Link>
                 </li>
                 <li>
@@ -40,7 +43,7 @@ const Header = () => {
                     onClick={logout}
                     className="hover:text-brand-yellow transition-colors duration-300"
                   >
-                    Logout
+                    {t("logout")}
                   </button>
                 </li>
               </>
@@ -51,7 +54,7 @@ const Header = () => {
                     to="/login"
                     className="hover:text-brand-yellow transition-colors duration-300"
                   >
-                    Login
+                    {t("login")}
                   </Link>
                 </li>
                 <li>
@@ -59,7 +62,7 @@ const Header = () => {
                     to="/signup"
                     className="hover:text-brand-yellow transition-colors duration-300"
                   >
-                    Signup
+                    {t("signup")}
                   </Link>
                 </li>
               </>
@@ -69,8 +72,11 @@ const Header = () => {
                 to="/editor"
                 className="hover:text-brand-yellow transition-colors duration-300"
               >
-                Editor
+                {t("editor")}
               </Link>
+            </li>
+            <li>
+              <LanguageSwitcher />
             </li>
           </ul>
         </nav>
