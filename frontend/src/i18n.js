@@ -13,7 +13,7 @@ i18n
       escapeValue: false, // React에서 XSS 공격 방지를 위해 escape 처리를 하므로, 여기서는 비활성화
     },
     backend: {
-      loadPath: "/locales/{{lng}}/{{ns}}.json",
+      loadPath: "/locales/{{ns}}.json",
     },
   });
 
