@@ -6,6 +6,7 @@ import rehypeKatex from "rehype-katex";
 import TextareaAutosize from "react-textarea-autosize";
 import { ClipboardDocumentIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet";
 
 const Editor = () => {
   const { t } = useTranslation();

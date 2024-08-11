@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllDocuments } from "../api";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 function DocumentList() {
   const [documents, setDocuments] = useState([]);

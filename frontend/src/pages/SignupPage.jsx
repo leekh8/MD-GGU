@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthProvider";
+import { Helmet } from "react-helmet";
 
 const SignupPage = () => {
   const [username, setUsername] = useState("");

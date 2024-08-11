@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet";
 
 const HomePage = () => {
   const { t } = useTranslation();
