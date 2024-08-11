@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import AuthMessage from "../components/AuthMessage";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -25,6 +26,11 @@ const LoginPage = () => {
 
   return (
     <div className="max-w-lg mx-auto mt-10 px-4 py-8 shadow-lg rounded-lg">
+      <Helmet>
+        <title>
+          {t("mdggu")} ・ {t("login")}
+        </title>
+      </Helmet>
       <h1 className="text-xl font-semibold text-center text-brand-blue">
         Login to Your Account
       </h1>

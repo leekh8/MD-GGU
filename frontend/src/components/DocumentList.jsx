@@ -28,6 +28,11 @@ function DocumentList() {
 
   return (
     <div className="container mx-auto px-4 py-4">
+      <Helmet>
+        <title>
+          {t("mdggu")} ・ {t("documents")}
+        </title>
+      </Helmet>
       <h1 className="text-xl font-bold text-gray-800 mb-4">Your Documents</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {documents.map((document) => (

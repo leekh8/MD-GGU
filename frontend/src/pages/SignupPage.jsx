@@ -26,6 +26,11 @@ const SignupPage = () => {
 
   return (
     <div className="max-w-lg mx-auto mt-10 px-4 py-8 shadow-lg rounded-lg">
+      <Helmet>
+        <title>
+          {t("mdggu")} ・ {t("signup")}
+        </title>
+      </Helmet>
       <h1 className="text-xl font-semibold text-center text-brand-blue">
         Sign Up for MD GGU
       </h1>

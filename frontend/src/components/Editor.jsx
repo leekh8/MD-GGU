@@ -68,6 +68,11 @@ const Editor = () => {
   // TODO: 저장 기능 추가
   return (
     <div className="container mx-auto px-4 py-4">
+      <Helmet>
+        <title>
+          {t("mdggu")} ・ {t("editor")}
+        </title>
+      </Helmet>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold font-sans text-brand-blue">
           {t("markdown editor")}
