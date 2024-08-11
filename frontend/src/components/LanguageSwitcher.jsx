@@ -17,7 +17,7 @@ const LanguageSwitcher = () => {
     <Menu as="div" className="relative inline-block text-left">
       <div>
         <Menu.Button className="flex items-center text-white hover:text-brand-yellow py-1 px-2 rounded-md transition-colors duration-200">
-          <GlobeAltIcon className="w-5 h-5 mr-2" aria-hidden="true" />
+          <GlobeAltIcon className="w-5 h-5 mr-1" aria-hidden="true" />
           <ChevronDownIcon className="w-4 h-4 ml-2" aria-hidden="true" />
         </Menu.Button>
       </div>
