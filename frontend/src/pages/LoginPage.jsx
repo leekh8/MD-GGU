@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import AuthMessage from "../components/AuthMessage";
+import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // 에러 메시지 상태

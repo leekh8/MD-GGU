@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getAllDocuments } from "../api";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
 
 function DocumentList() {
+  const { t } = useTranslation();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
