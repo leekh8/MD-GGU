@@ -98,7 +98,7 @@ const Editor = () => {
             ) : (
               <ClipboardDocumentIcon className="h-5 w-5 mr-2" />
             )}
-            {copySuccess ? "Copied" : "Copy"}
+            {copySuccess ? t("copied") : t("copy")}
           </button>
         </div>
       </div>

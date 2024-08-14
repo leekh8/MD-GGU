@@ -35,7 +35,7 @@ const LoginPage = () => {
         </title>
       </Helmet>
       <h1 className="text-xl font-semibold text-center text-brand-blue">
-        Login to Your Account
+        {t("login to your account")}
       </h1>
       {error && <p className="text-red-500 text-center">{error}</p>}{" "}
       {/* 에러 메시지 */}
@@ -45,7 +45,7 @@ const LoginPage = () => {
             htmlFor="email"
             className="block text-sm font-medium text-gray-700"
           >
-            Email
+            {t("email")}
           </label>
           <input
             type="email"
@@ -61,7 +61,7 @@ const LoginPage = () => {
             htmlFor="password"
             className="block text-sm font-medium text-gray-700"
           >
-            Password
+            {t("password")}
           </label>
           <input
             type="password"

@@ -23,7 +23,7 @@ const HomePage = () => {
       <p className="text-xl text-center text-brand-grey mb-8">
         {user.username !== "Guest"
           ? `Hello, ${user.username}! Explore our features.`
-          : "Explore our features to optimize your markdown documents!"}
+          : t("Explore our features to optimize your markdown documents!")}
       </p>
       <div className="flex justify-center gap-4">
         <Link
