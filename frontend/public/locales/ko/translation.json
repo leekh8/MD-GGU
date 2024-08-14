@@ -1,5 +1,6 @@
 {
   "welcome to mdggu": "환영합니다",
+  "Explore our features to optimize your markdown documents!": "마크다운 문서 최적화를 시작해보세요!",
   "view documents": "문서 보기",
   "start editing": "편집 시작하기",
   "mdggu": "MDGGU",
@@ -7,13 +8,17 @@
   "documents": "문서함",
   "logout": "로그아웃",
   "login": "로그인",
+  "login to your account": "로그인",
+  "password": "비밀번호",
   "signup": "가입",
-  "editor": "수정하기",
+  "editor": "수정",
   "email": "이메일",
-  "markdown editor": "마크다운 수정하기",
+  "markdown editor": "마크다운 수정",
   "default": "기본",
   "creative": "창의적",
   "professional": "전문적",
+  "copy": "복사하기",
+  "copied": "복사됨",
   "save": "저장",
   "edit": "수정"
 }

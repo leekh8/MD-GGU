@@ -7,6 +7,8 @@
   "documents": "Documents",
   "logout": "Logout",
   "login": "Login",
+  "login to your account": "Login to Your Account",
+  "password": "Password",
   "signup": "Signup",
   "editor": "Editor",
   "email": "Email",
@@ -14,6 +16,8 @@
   "default": "Default",
   "creative": "Creative",
   "professional": "Professional",
+  "copy": "Copy",
+  "copied": "Copied",
   "save": "Save",
   "edit": "Edit"
 }
