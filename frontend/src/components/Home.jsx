@@ -20,31 +20,31 @@ const HomePage = () => {
       <h1 className="text-3xl font-bold text-center text-brand-blue mb-6">
         {t("welcome to mdggu")}
       </h1>
-      <p className="text-xl text-center text-brand-grey mb-8">
+      <p className="text-xl text-center text-brand-gray mb-8">
         {user.username !== "Guest"
           ? `Hello, ${user.username}! Explore our features.`
           : t("Explore our features to optimize your markdown documents!")}
       </p>
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-col items-center md:flex-row justify-center gap-4">
         <Link
           to="/documents"
-          className="bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-strong"
+          className="bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-strong max-w-xs md:max-w-none text-center"
         >
           {t("view documents")}
         </Link>
         <Link
           to="/editor"
-          className="bg-brand-yellow hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow-strong"
+          className="bg-brand-yellow hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow-strong max-w-xs md:max-w-none text-center"
         >
           {t("start editing")}
         </Link>
       </div>
       <div className="mt-8 text-center">
         {/* <img
-          src="path_to_welcome_image.jpg"
-          alt="Welcome Image"
-          className="mx-auto"
-        /> */}
+      src="path_to_welcome_image.jpg"
+      alt="Welcome Image"
+      className="mx-auto"
+    /> */}
       </div>
     </div>
   );
