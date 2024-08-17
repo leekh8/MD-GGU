@@ -2,100 +2,144 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base styles */
+body {
+  @apply m-0 font-sans antialiased subpixel-antialiased; /* Tailwind CSS 기본 스타일 적용 */
+}
+
+code {
+  @apply font-mono; /* monospace 폰트 적용 */
+}
+
 /* Base container and layout styling */
 .container {
   @apply mx-auto max-w-7xl;
 }
+@layer utilities {
+  .button {
+    @apply bg-brand-blue text-white font-bold py-2 px-4 rounded hover:bg-brand-blue-light;
+  }
+  .background {
+    @apply bg-neutral-gray;
+  }
+  .border-box {
+    @apply border-2 border-neutral-gray-dark;
+  }
 
-.button {
-  @apply bg-brand-blue text-white font-bold py-2 px-4 rounded hover:bg-brand-blue-light;
+  /* Custom styles for markdown content */
+  .prose {
+    /* Headers */
+    h1 {
+      @apply text-3xl font-bold my-4;
+    }
+    h2 {
+      @apply text-2xl font-bold my-3;
+    }
+    h3 {
+      @apply text-xl font-bold my-2;
+    }
+    h4,
+    h5,
+    h6 {
+      @apply text-lg font-semibold my-1;
+    }
+
+    /* Paragraphs */
+    p {
+      @apply my-2;
+    }
+
+    /* Lists */
+    ul {
+      @apply list-disc pl-5 my-2;
+    }
+    ol {
+      @apply list-decimal pl-5 my-2;
+    }
+    li {
+      @apply my-1;
+    }
+
+    /* Blockquotes */
+    blockquote {
+      @apply italic border-l-4 border-neutral-gray-dark pl-4 my-2;
+    }
+
+    /* Code styling */
+    code {
+      @apply bg-neutral-gray-light rounded p-1 font-mono text-sm;
+    }
+    pre {
+      @apply bg-neutral-gray p-2 rounded overflow-x-auto;
+    }
+
+    /* Tables */
+    table {
+      @apply min-w-full divide-y divide-neutral-gray;
+    }
+    th {
+      @apply bg-neutral-gray-light p-2 text-left font-semibold;
+    }
+    td {
+      @apply bg-white p-2;
+    }
+
+    /* Links */
+    a {
+      @apply text-info-blue underline;
+    }
+
+    /* Images */
+    img {
+      @apply mx-auto my-4 max-w-full;
+    }
+  }
+}
+body {
+  margin: 0;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.background {
-  @apply bg-neutral-gray;
+/* App.css에 있던 코드 중 필요한 부분만 추가 */
+.App {
+  text-align: center;
 }
 
-.border-box {
-  @apply border-2 border-neutral-gray-dark;
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
-.hover\:bg-blue-700:hover {
-  @apply bg-blue-700;
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
-.background {
-  @apply bg-brand-gray;
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
-.border-box {
-  @apply border-2 border-brand-gray;
+.App-link {
+  color: #61dafb;
 }
 
-/* Custom styles for markdown content */
-.prose {
-  /* Headers */
-  h1 {
-    @apply text-3xl font-bold my-4;
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
   }
-  h2 {
-    @apply text-2xl font-bold my-3;
-  }
-  h3 {
-    @apply text-xl font-bold my-2;
-  }
-  h4,
-  h5,
-  h6 {
-    @apply text-lg font-semibold my-1;
-  }
-
-  /* Paragraphs */
-  p {
-    @apply my-2;
-  }
-
-  /* Lists */
-  ul {
-    @apply list-disc pl-5 my-2;
-  }
-  ol {
-    @apply list-decimal pl-5 my-2;
-  }
-  li {
-    @apply my-1;
-  }
-
-  /* Blockquotes */
-  blockquote {
-    @apply italic border-l-4 border-brand-gray pl-4 my-2;
-  }
-
-  /* Code styling */
-  code {
-    @apply bg-neutral-gray-light rounded p-1 font-mono text-sm;
-  }
-  pre {
-    @apply bg-neutral-gray rounded p-2 rounded overflow-x-auto;
-  }
-
-  /* Tables */
-  table {
-    @apply min-w-full divide-y divide-neutral-gray;
-  }
-  th {
-    @apply bg-neutral-gray-light p-2 text-left font-semibold;
-  }
-  td {
-    @apply bg-white p-2;
-  }
-
-  /* Links */
-  a {
-    @apply text-info-blue underline;
-  }
-
-  /* Images */
-  img {
-    @apply mx-auto my-4 max-w-full;
+  to {
+    transform: rotate(360deg);
   }
 }
