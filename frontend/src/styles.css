@@ -23,6 +23,22 @@ code {
   @apply mx-auto max-w-7xl;
 }
 
+@layer components {
+  .nav-link {
+    @apply text-white hover:text-brand-yellow transition-colors duration-300;
+  }
+}
+
+@media (min-width: 768px) {
+  .nav-link {
+    @apply md:text-black md:hover:text-brand-yellow;
+  }
+
+  .dropdown-item {
+    @apply text-black hover:text-brand-yellow transition-colors duration-300;
+  }
+}
+
 @layer utilities {
   .button {
     @apply bg-brand-blue text-white font-bold py-2 px-4 rounded hover:bg-brand-blue-light;
