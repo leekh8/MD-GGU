@@ -74,7 +74,7 @@ const Editor = () => {
           {t("mdggu")} ・ {t("editor")}
         </title>
       </Helmet>
-      <div className="flex justify-between items-center mb-4">
+      <div className="pt-4 flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold font-sans text-brand-blue">
           {t("markdown editor")}
         </h1>
@@ -110,6 +110,7 @@ const Editor = () => {
           value={content}
           placeholder="Type your markdown here..."
           minRows={10}
+          style={{ flexGrow: 1 }}
         />
         <div className="md:flex-1 border-2 border-brand-grey rounded shadow-strong p-4 min-h-[30rem] overflow-auto">
           <ReactMarkdown

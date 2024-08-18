@@ -13,7 +13,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto my-4 px-4 py-8">
       <Helmet>
         <title>{t("mdggu")}</title>
       </Helmet>
@@ -28,23 +28,23 @@ const HomePage = () => {
       <div className="flex flex-col items-center md:flex-row justify-center gap-4">
         <Link
           to="/documents"
-          className="bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-strong max-w-xs md:max-w-none text-center"
+          className="bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-strong max-w-xs md:max-w-xs text-center"
         >
           {t("view documents")}
         </Link>
         <Link
           to="/editor"
-          className="bg-brand-yellow hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow-strong max-w-xs md:max-w-none text-center"
+          className="bg-brand-yellow hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow-strong max-w-xs md:max-w-xs text-center"
         >
           {t("start editing")}
         </Link>
       </div>
       <div className="mt-8 text-center">
         {/* <img
-      src="path_to_welcome_image.jpg"
-      alt="Welcome Image"
-      className="mx-auto"
-    /> */}
+        src="path_to_welcome_image.jpg"
+        alt="Welcome Image"
+        className="mx-auto"
+      /> */}
       </div>
     </div>
   );
