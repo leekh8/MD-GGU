@@ -63,7 +63,7 @@ const Header = () => {
                     to="/signup"
                     className="hover:text-brand-yellow transition-colors duration-300"
                   >
-                    {t("signup")}
+                    {t("sign up")}
                   </Link>
                 </li>
               </>
