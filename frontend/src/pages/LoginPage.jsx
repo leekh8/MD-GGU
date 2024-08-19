@@ -50,7 +50,7 @@ const LoginPage = () => {
           <input
             type="email"
             id="email"
-            placeholder="Email"
+            placeholder={t("email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
@@ -66,7 +66,7 @@ const LoginPage = () => {
           <input
             type="password"
             id="password"
-            placeholder="Password"
+            placeholder={t("password")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
@@ -76,7 +76,7 @@ const LoginPage = () => {
           type="submit"
           className="w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow"
         >
-          Login
+          {t("login")}
         </button>
       </form>
     </div>
