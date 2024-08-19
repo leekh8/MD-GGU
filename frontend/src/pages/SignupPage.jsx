@@ -35,11 +35,11 @@ const SignupPage = () => {
         </title>
       </Helmet>
       <h1 className="text-xl font-semibold text-center text-brand-blue">
-        Sign Up for MD GGU
+        {t("sign up for mdggu")}
       </h1>
       {error && <p className="text-red-500 text-center">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+        {/* <div>
           <label
             htmlFor="username"
             className="block text-sm font-medium text-gray-700"
@@ -54,18 +54,18 @@ const SignupPage = () => {
             onChange={(e) => setUsername(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
           />
-        </div>
+        </div> */}
         <div>
           <label
             htmlFor="email"
             className="block text-sm font-medium text-gray-700"
           >
-            Email
+            {t("email")}
           </label>
           <input
             type="email"
             id="email"
-            placeholder="Email"
+            placeholder={t("email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
@@ -76,12 +76,12 @@ const SignupPage = () => {
             htmlFor="password"
             className="block text-sm font-medium text-gray-700"
           >
-            Password
+            {t("password")}
           </label>
           <input
             type="password"
             id="password"
-            placeholder="Password"
+            placeholder={t("password")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
@@ -91,7 +91,7 @@ const SignupPage = () => {
           type="submit"
           className="w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow"
         >
-          Sign Up
+          {t("sign up")}
         </button>
       </form>
     </div>
