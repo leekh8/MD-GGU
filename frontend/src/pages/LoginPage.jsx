@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import AuthMessage from "../components/AuthMessage";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
 
@@ -15,15 +14,27 @@ const LoginPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(""); // 제출 시 기존 에러 메시지 초기화
+
     if (!email || !password) {
-      setError("All fields are required");
+      setError(t("allFieldsRequired"));
       return;
     }
+
     try {
       await auth.login(email, password);
-      navigate("/"); // Redirect to home after login
+      navigate("/"); // 로그인 후 홈으로 리다이렉트
     } catch (e) {
-      setError("Login failed: " + e.message); // 예외 처리와 에러 메시지 설정
+      if (e.message.includes("invalid_grant")) {
+        setError(t("incorrectEmailOrPassword"));
+      } else if (
+        e.message.includes("network error") ||
+        e.message.includes("server error")
+      ) {
+        setError(t("serverOrNetworkError"));
+      } else {
+        setError(t("unexpectedError"));
+      }
     }
   };
 
@@ -35,7 +46,7 @@ const LoginPage = () => {
         </title>
       </Helmet>
       <h1 className="text-xl font-semibold text-center text-brand-blue">
-        {t("login to your account")}
+        {t("loginToYourAccount")}
       </h1>
       {error && <p className="text-red-500 text-center">{error}</p>}{" "}
       {/* 에러 메시지 */}
