@@ -8,21 +8,44 @@ const SignupPage = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const { register } = useAuth();
+  const [error, setError] = useState(""); // 에러 메시지 상태
+  const auth = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(""); // 제출 시 기존 에러 메시지 초기화
+
     if (!email || !password) {
-      setError("All fields are required");
+      setError(t("allFieldsRequired"));
       return;
     }
+
     try {
-      register(email, password);
-      navigate("/"); // 회원가입 후 홈페이지로 리디렉션
+      const response = await auth.register(email, password);
+      if (response.success) {
+        navigate("/"); // 회원 가입 후 홈으로 리다이렉트
+      } else {
+        if (response.message.includes("Email is already taken")) {
+          setError(t("emailAlreadyTaken"));
+        } else if (
+          response.message.includes("network error") ||
+          response.message.includes("server error")
+        ) {
+          setError(t("serverOrNetworkError"));
+        } else {
+          setError(t("unexpectedError"));
+        }
+      }
     } catch (e) {
-      setError("Signup failed: " + e.message);
+      if (
+        e.message.includes("network error") ||
+        e.message.includes("server error")
+      ) {
+        setError(t("serverOrNetworkError"));
+      } else {
+        setError(t("unexpectedError"));
+      }
     }
   };
 
@@ -36,7 +59,8 @@ const SignupPage = () => {
       <h1 className="text-xl font-semibold text-center text-brand-blue">
         {t("sign up for mdggu")}
       </h1>
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && <p className="break-line text-red-500 text-center">{error}</p>}{" "}
+      {/* 에러 메시지 */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label

@@ -160,3 +160,8 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* 줄바꿈이 필요한 텍스트 */
+.break-line {
+  white-space: pre-wrap;
+}

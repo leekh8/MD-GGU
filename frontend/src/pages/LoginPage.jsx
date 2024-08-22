@@ -48,7 +48,7 @@ const LoginPage = () => {
       <h1 className="text-xl font-semibold text-center text-brand-blue">
         {t("loginToYourAccount")}
       </h1>
-      {error && <p className="text-red-500 text-center">{error}</p>}{" "}
+      {error && <p className="break-line text-red-500 text-center">{error}</p>}{" "}
       {/* 에러 메시지 */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
