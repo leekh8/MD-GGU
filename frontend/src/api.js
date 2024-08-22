@@ -3,47 +3,70 @@ import axios from "axios";
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
-// Authentication-related functions
-export function register(username, email, password) {
+// 사용자 인증 관련 함수들
+export function register(email, password) {
   return axios
-    .post(`${BACKEND_URL}/api/auth/register`, {
-      username,
+    .post(`${BACKEND_URL}/api/v1/auth/register`, {
       email,
       password,
     })
+    .then((response) => response.data)
     .catch((error) => {
       console.error("Registration error: ", error.response || error);
-      throw error;
+      throw error.response?.data || error;
     });
 }
 
-export function login(username, password) {
-  return axios.post(`${BACKEND_URL}/auth/login`, {
-    username,
-    password,
-  });
+export function login(email, password) {
+  return axios
+    .post(`${BACKEND_URL}/api/v1/auth/login`, {
+      email,
+      password,
+    })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Login error: ", error.response || error);
+      throw error.response?.data || error;
+    });
 }
 
 export function logout() {
-  return axios.post(`${BACKEND_URL}/auth/logout`);
+  return axios
+    .post(`${BACKEND_URL}/api/v1/auth/logout`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Logout error: ", error.response || error);
+      throw error.response?.data || error;
+    });
 }
 
+export function getUser() {
+  return axios
+    .get(`${BACKEND_URL}/api/v1/auth/me`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Get user error: ", error.response || error);
+      throw error.response?.data || error;
+    });
+}
+
+// 문서 관련 함수들
 export function getAllDocuments() {
-  return axios.get(`${BACKEND_URL}/documents`);
+  return axios.get(`${BACKEND_URL}/api/v1/documents`);
 }
 
 export function getDocumentById(id) {
-  return axios.get(`${BACKEND_URL}/documents/${id}`);
+  return axios.get(`${BACKEND_URL}/api/v1/documents/${id}`);
 }
 
 export function createDocument(document) {
-  return axios.post(`${BACKEND_URL}/documents`, document);
+  return axios.post(`${BACKEND_URL}/api/v1/documents`, document);
 }
 
 export function updateDocument(id, document) {
-  return axios.put(`${BACKEND_URL}/documents/${id}`, document);
+  return axios.put(`${BACKEND_URL}/api/v1/documents/${id}`, document);
 }
 
 export function deleteDocument(id) {
-  return axios.delete(`${BACKEND_URL}/documents/${id}`);
+  return axios.delete(`${BACKEND_URL}/api/v1/documents/${id}`);
 }
