@@ -16,7 +16,7 @@ const defaultAuthContext = {
 export const AuthContext = createContext(defaultAuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({ username: "Guest" });
+  const [user, setUser] = useState(null);
   const [authMessage, setAuthMessage] = useState(null);
 
   const register = async (email, password) => {
@@ -24,15 +24,28 @@ export const AuthProvider = ({ children }) => {
       const response = await apiRegister(email, password);
       if (response.success) {
         setUser({ email });
-        setAuthMessage(response.message); // 서버에서 받은 성공 메시지 설정
+        setAuthMessage("registrationSuccessful"); // 성공 메시지 설정
       } else {
-        setAuthMessage(response.message); // 서버에서 받은 실패 메시지 설정
+        handleFailureMessage(response.message);
       }
       return response;
     } catch (error) {
-      setAuthMessage("Registration failed. Please try again later.");
+      setAuthMessage("registrationFailed"); // 일반적인 실패 메시지 설정
       console.error("Registration error:", error);
       throw error;
+    }
+  };
+
+  const handleFailureMessage = (message) => {
+    if (message.includes("Email is already taken")) {
+      setAuthMessage("emailAlreadyTaken");
+    } else if (
+      message.includes("network error") ||
+      message.includes("server error")
+    ) {
+      setAuthMessage("serverOrNetworkError");
+    } else {
+      setAuthMessage("unexpectedError");
     }
   };
 
@@ -40,11 +53,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiLogin(email, password);
       setUser({ email });
-      setAuthMessage("Login successful!");
-      console.log("Login successful:", response);
+      setAuthMessage("loginSuccessful");
+      return response;
     } catch (error) {
-      setAuthMessage("Login failed. Please check your credentials.");
-      console.error("Login failed:", error);
+      setAuthMessage("incorrectEmailOrPassword");
+      console.error("Login error:", error);
       throw error;
     }
   };
@@ -52,12 +65,12 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       const response = await apiLogout();
-      setUser({ username: "Guest" });
-      setAuthMessage("Logout successful!");
-      console.log("Logout successful:", response);
+      setUser(null);
+      setAuthMessage("logoutSuccessful");
+      return response;
     } catch (error) {
-      setAuthMessage("Logout failed. Please try again later.");
-      console.error("Logout failed:", error);
+      setAuthMessage("unexpectedError");
+      console.error("Logout error:", error);
       throw error;
     }
   };

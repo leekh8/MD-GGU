@@ -8,16 +8,14 @@ const SignupPage = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // 에러 메시지 상태
   const auth = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(""); // 제출 시 기존 에러 메시지 초기화
 
     if (!email || !password) {
-      setError(t("allFieldsRequired"));
+      auth.setAuthMessage(t("allFieldsRequired")); // 전역 상태로 메시지 설정
       return;
     }
 
@@ -25,27 +23,9 @@ const SignupPage = () => {
       const response = await auth.register(email, password);
       if (response.success) {
         navigate("/"); // 회원 가입 후 홈으로 리다이렉트
-      } else {
-        if (response.message.includes("Email is already taken")) {
-          setError(t("emailAlreadyTaken"));
-        } else if (
-          response.message.includes("network error") ||
-          response.message.includes("server error")
-        ) {
-          setError(t("serverOrNetworkError"));
-        } else {
-          setError(t("unexpectedError"));
-        }
       }
     } catch (e) {
-      if (
-        e.message.includes("network error") ||
-        e.message.includes("server error")
-      ) {
-        setError(t("serverOrNetworkError"));
-      } else {
-        setError(t("unexpectedError"));
-      }
+      // 실패 메시지는 AuthProvider에서 처리되므로 추가 처리 필요 없음
     }
   };
 
@@ -59,8 +39,6 @@ const SignupPage = () => {
       <h1 className="text-xl font-semibold text-center text-brand-blue">
         {t("sign up for mdggu")}
       </h1>
-      {error && <p className="break-line text-red-500 text-center">{error}</p>}{" "}
-      {/* 에러 메시지 */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label

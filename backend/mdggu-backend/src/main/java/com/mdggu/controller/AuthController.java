@@ -34,12 +34,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userService.checkIfUserExist(user.getEmail())) { // email 중복 체크
-            return ResponseEntity.badRequest().body("Email is already taken!");
+        try {
+            if (userService.checkIfUserExist(user.getEmail())) {
+                return ResponseEntity.badRequest().body(new ApiResponse(false, "Email is already taken!"));
+            }
+            userService.registerNewUser(user.getEmail(), user.getPassword());
+            return ResponseEntity.ok(new ApiResponse(true, "User registered successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse(false, "An error occurred during registration: " + e.getMessage()));
         }
-        userService.registerNewUser(user.getEmail(), user.getPassword()); // email 사용
-        return ResponseEntity.ok("User registered successfully!");
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
