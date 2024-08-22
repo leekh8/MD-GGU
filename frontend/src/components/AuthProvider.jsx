@@ -19,11 +19,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({ username: "Guest" });
   const [authMessage, setAuthMessage] = useState(null);
 
-  const register = async (username, email, password) => {
+  const register = async (email, password) => {
     try {
-      const response = await apiRegister(username, email, password);
-      setUser({ username });
-      setAuthMessage("Registration successful");
+      const response = await apiRegister(email, password);
+      if (response.success) {
+        setUser({ email });
+        setAuthMessage(response.message); // 서버에서 받은 성공 메시지 설정
+      } else {
+        setAuthMessage(response.message); // 서버에서 받은 실패 메시지 설정
+      }
       return response;
     } catch (error) {
       setAuthMessage("Registration failed. Please try again later.");
@@ -32,10 +36,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (username, password) => {
+  const login = async (email, password) => {
     try {
-      const response = await apiLogin(username, password);
-      setUser({ username });
+      const response = await apiLogin(email, password);
+      setUser({ email });
       setAuthMessage("Login successful!");
       console.log("Login successful:", response);
     } catch (error) {
@@ -60,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, register, login, logout, authMessage }}
+      value={{ user, register, login, logout, authMessage, setAuthMessage }}
     >
       {children}
     </AuthContext.Provider>
