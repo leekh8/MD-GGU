@@ -15,7 +15,7 @@ const HomePage = () => {
   return (
     <div className="container mx-auto my-4 px-4 py-8">
       <Helmet>
-        <title>{t("mdggu")}</title>
+        <title>{t("welcome to mdggu")}</title>
       </Helmet>
       <h1 className="text-3xl font-bold text-center text-brand-blue mb-6">
         {t("welcome to mdggu")}
