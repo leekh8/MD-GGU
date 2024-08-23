@@ -39,13 +39,6 @@ const HomePage = () => {
           {t("start editing")}
         </Link>
       </div>
-      <div className="mt-8 text-center">
-        {/* <img
-        src="path_to_welcome_image.jpg"
-        alt="Welcome Image"
-        className="mx-auto"
-      /> */}
-      </div>
     </div>
   );
 };
