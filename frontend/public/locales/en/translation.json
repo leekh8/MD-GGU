@@ -12,8 +12,8 @@
   "loginToYourAccount": "Log in to Your Account",
   "password": "Password",
   "incorrectEmailOrPassword": "Incorrect email or password.",
-  "serverOrNetworkError": "There was an issue processing your request. Please try again later.",
-  "unexpectedError": "An unexpected error occurred. Please try again later or contact support.",
+  "serverOrNetworkError": "There was an issue processing your request. \nPlease try again later.",
+  "unexpectedError": "An unexpected error occurred. \nPlease try again later or contact support.",
   "sign up": "Sign Up",
   "sign up for mdggu": "Sign Up for MD GGU",
   "editor": "Editor",
@@ -27,9 +27,9 @@
   "save": "Save",
   "edit": "Edit",
   "allFieldsRequired": "Please fill out all fields.",
-  "emailAlreadyTaken": "This email is already in use. Please choose a different email.",
-  "registrationSuccessful": "Registration successful! Welcome to MD GGU.",
-  "registrationFailed": "Registration failed. Please try again later.",
-  "loginSuccessful": "Login successful! Welcome back.",
-  "logoutSuccessful": "You have successfully logged out. See you next time."
+  "emailAlreadyTaken": "This email is already in use. \nPlease choose a different email.",
+  "registrationSuccessful": "Registration successful! \nWelcome to MD GGU.",
+  "registrationFailed": "Registration failed. \nPlease try again later.",
+  "loginSuccessful": "Login successful! \nWelcome back.",
+  "logoutSuccessful": "You have successfully logged out. \nSee you next time."
 }

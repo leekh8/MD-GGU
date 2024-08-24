@@ -28,7 +28,9 @@ const AuthMessage = () => {
       className={`${messageClass} text-white px-4 py-3 rounded shadow-strong flex items-center justify-between max-w-xs fixed bottom-4 right-4`}
       role="alert"
     >
-      <span className="block sm:inline">{t(authMessage.message)}</span>
+      <span className="block sm:inline break-line">
+        {t(authMessage.message)}
+      </span>
       <button
         type="button"
         className="text-white ml-4"

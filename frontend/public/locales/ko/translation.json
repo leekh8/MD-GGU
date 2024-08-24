@@ -12,8 +12,8 @@
   "loginToYourAccount": "계정에 로그인",
   "password": "비밀번호",
   "incorrectEmailOrPassword": "이메일 또는 비밀번호가 잘못되었습니다.",
-  "serverOrNetworkError": "요청 처리 중 문제가 발생했습니다. 나중에 다시 시도해 주세요.",
-  "unexpectedError": "예상치 못한 오류가 발생했습니다. 나중에 다시 시도하시거나 지원팀에 문의해 주세요.",
+  "serverOrNetworkError": "요청 처리 중 문제가 발생했습니다. \n나중에 다시 시도해 주세요.",
+  "unexpectedError": "예상치 못한 오류가 발생했습니다. \n나중에 다시 시도하시거나 지원팀에 문의해 주세요.",
   "sign up": "회원가입",
   "sign up for mdggu": "MD GGU에 가입하기",
   "editor": "편집기",
@@ -27,9 +27,9 @@
   "save": "저장",
   "edit": "수정",
   "allFieldsRequired": "모든 필드를 작성해 주세요.",
-  "emailAlreadyTaken": "이미 사용 중인 이메일입니다. 다른 이메일을 선택해 주세요.",
-  "registrationSuccessful": "가입이 성공적으로 완료되었습니다! MD GGU에 오신 것을 환영합니다.",
-  "registrationFailed": "가입에 실패했습니다. 나중에 다시 시도해 주세요.",
-  "loginSuccessful": "로그인이 성공적으로 완료되었습니다! 다시 오신 것을 환영합니다.",
-  "logoutSuccessful": "성공적으로 로그아웃되었습니다. 다음에 또 만나요."
+  "emailAlreadyTaken": "이미 사용 중인 이메일입니다. \n다른 이메일을 선택해 주세요.",
+  "registrationSuccessful": "가입이 성공적으로 완료되었습니다! \nMD GGU에 오신 것을 환영합니다.",
+  "registrationFailed": "가입에 실패했습니다. \n나중에 다시 시도해 주세요.",
+  "loginSuccessful": "로그인이 성공적으로 완료되었습니다! \n다시 오신 것을 환영합니다.",
+  "logoutSuccessful": "성공적으로 로그아웃되었습니다. \n다음에 또 만나요."
 }
