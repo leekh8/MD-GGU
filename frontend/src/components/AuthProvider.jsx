@@ -5,6 +5,7 @@ import {
   logout as apiLogout,
   getUser as apiGetUser,
 } from "../api";
+import { useTranslation } from "react-i18next";
 
 // 초기 기본값 설정
 const defaultAuthContext = {
@@ -49,13 +50,14 @@ export const AuthProvider = ({ children }) => {
       const response = await apiRegister(email, password);
       if (response.success) {
         setUser({ email });
-        setAuthMessage("registrationSuccessful");
+        setMessageType("success");
+        setAuthMessage(t("registrationSuccessful"));
       } else {
         handleFailureMessage(response.message);
       }
       return response;
     } catch (error) {
-      setAuthMessage("registrationFailed");
+      setAuthMessage(t("registrationFailed"));
       console.error("Registration error:", error);
       throw error;
     }
@@ -78,10 +80,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiLogin(email, password);
       setUser({ email });
-      setAuthMessage("loginSuccessful");
+        setMessageType("success");
+        setAuthMessage(t("loginSuccessful"));
+      } else {
+        handleFailureMessage(response.message);
+      }
       return response;
     } catch (error) {
-      setAuthMessage("incorrectEmailOrPassword");
+      setAuthMessage(t("incorrectEmailOrPassword"));
       console.error("Login error:", error);
       throw error;
     }
@@ -91,10 +97,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiLogout();
       setUser({ username: "Guest" });
-      setAuthMessage("logoutSuccessful");
-      return response;
+      setMessageType("success");
+      setAuthMessage(t("logoutSuccessful"));
     } catch (error) {
-      setAuthMessage("unexpectedError");
+      setAuthMessage(t("unexpectedError"));
       console.error("Logout error:", error);
       throw error;
     }
