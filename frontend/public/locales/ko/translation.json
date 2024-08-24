@@ -14,7 +14,7 @@
   "incorrectEmailOrPassword": "이메일 또는 비밀번호가 잘못되었습니다.",
   "serverOrNetworkError": "요청 처리 중 문제가 발생했습니다. \n나중에 다시 시도해 주세요.",
   "unexpectedError": "예상치 못한 오류가 발생했습니다. \n나중에 다시 시도하시거나 지원팀에 문의해 주세요.",
-  "sign up": "회원가입",
+  "signup": "회원가입",
   "sign up for mdggu": "MD GGU에 가입하기",
   "editor": "편집기",
   "email": "이메일",
