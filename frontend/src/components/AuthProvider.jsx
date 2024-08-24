@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const currentUser = await apiGetUser(); // 서버에서 현재 사용자 정보 가져오기
         if (currentUser) {
-          setUser(currentUser);
+          setUser(currentUser); // 로그인된 사용자의 정보 설정
         } else {
           setUser({ username: "Guest" }); // 로그인되지 않은 경우
         }
