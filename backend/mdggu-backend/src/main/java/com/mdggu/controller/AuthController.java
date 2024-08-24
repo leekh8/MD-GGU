@@ -79,10 +79,18 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getMyInfo() {
-        // 사용자 정보 조회 로직 (현재 로그인된 사용자 정보 반환)
-        User user = userService.getCurrentUser();
-        return ResponseEntity.ok(user);
+    public ResponseEntity<?> getMyInfo() {
+        try {
+            User user = userService.getCurrentUser();
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User is not logged in");
+            }
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch user info");
+        }
     }
 
     @PutMapping("/me")

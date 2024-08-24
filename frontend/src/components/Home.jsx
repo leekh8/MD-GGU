@@ -3,26 +3,24 @@ import { Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
+import AuthMessage from "./AuthMessage";
 
 const HomePage = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
-
-  if (!user) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="container mx-auto my-4 px-4 py-8">
       <Helmet>
         <title>{t("welcome to mdggu")}</title>
       </Helmet>
+      <AuthMessage /> {/* 메시지 표시 컴포넌트 */}
       <h1 className="text-3xl font-bold text-center text-brand-blue mb-6">
         {t("welcome to mdggu")}
       </h1>
       <p className="text-xl text-center text-brand-gray mb-8">
         {user.username !== "Guest"
-          ? t("welcomeUser")
+          ? t("welcomeUser", { username: user.username })
           : t("Explore our features to optimize your markdown documents!")}
       </p>
       <div className="flex flex-col items-center md:flex-row justify-center gap-4">
