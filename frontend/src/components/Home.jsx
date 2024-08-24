@@ -22,7 +22,7 @@ const HomePage = () => {
       </h1>
       <p className="text-xl text-center text-brand-gray mb-8">
         {user.username !== "Guest"
-          ? `Hello, ${user.username}! Explore our features.`
+          ? t("welcomeUser")
           : t("Explore our features to optimize your markdown documents!")}
       </p>
       <div className="flex flex-col items-center md:flex-row justify-center gap-4">
