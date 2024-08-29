@@ -2,7 +2,9 @@
 import axios from "axios";
 
 const BACKEND_URL =
-  process.env.VITE_BACKEND_URL || import.meta.env.VITE_BACKEND_URL;
+  typeof process !== "undefined" && process.env.VITE_BACKEND_URL
+    ? process.env.VITE_BACKEND_URL
+    : import.meta.env.VITE_BACKEND_URL;
 
 // 사용자 인증 관련 함수들
 export function register(email, password) {
