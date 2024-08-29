@@ -14,6 +14,10 @@ const Header = () => {
   }
 
   const renderMenuItems = (isMobile) => {
+    const hoverClass = isMobile
+      ? "block px-4 py-2 text-sm hover:bg-gray-200" // 모바일 호버 스타일
+      : "hover:text-brand-yellow transition-colors duration-300"; // 일반 호버 스타일
+
     if (user.username !== "Guest") {
       // 로그인 했다면
       return (
@@ -22,19 +26,15 @@ const Header = () => {
             <Link
               to="/documents"
               onClick={() => isMobile && setMenuOpen(false)}
+              className={hoverClass}
             >
               {t("documents")}
             </Link>
           </li>
           <li>
-            <Link to="/login" onClick={() => isMobile && setMenuOpen(false)}>
-              {t("login")}
-            </Link>
-          </li>
-          <li>
-            <Link to="/signup" onClick={() => isMobile && setMenuOpen(false)}>
-              {t("signup")}
-            </Link>
+            <button onClick={logout} className={hoverClass}>
+              {t("logout")}
+            </button>
           </li>
         </>
       );
@@ -43,12 +43,20 @@ const Header = () => {
       return (
         <>
           <li>
-            <Link to="/login" onClick={() => isMobile && setMenuOpen(false)}>
+            <Link
+              to="/login"
+              onClick={() => isMobile && setMenuOpen(false)}
+              className={hoverClass}
+            >
               {t("login")}
             </Link>
           </li>
           <li>
-            <Link to="/signup" onClick={() => isMobile && setMenuOpen(false)}>
+            <Link
+              to="/signup"
+              onClick={() => isMobile && setMenuOpen(false)}
+              className={hoverClass}
+            >
               {t("signup")}
             </Link>
           </li>
