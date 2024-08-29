@@ -1,7 +1,8 @@
 // 프론트엔드와 백엔드 간의 통신 담당
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL =
+  process.env.VITE_BACKEND_URL || import.meta.env.VITE_BACKEND_URL;
 
 // 사용자 인증 관련 함수들
 export function register(email, password) {
