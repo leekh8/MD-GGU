@@ -6,8 +6,56 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 const Header = () => {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  if (loading) {
+    return <div>t("loading")</div>;
+  }
+
+  const renderMenuItems = (isMobile) => {
+    if (user.username !== "Guest") {
+      // 로그인 했다면
+      return (
+        <>
+          <li>
+            <Link
+              to="/documents"
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              {t("documents")}
+            </Link>
+          </li>
+          <li>
+            <Link to="/login" onClick={() => isMobile && setMenuOpen(false)}>
+              {t("login")}
+            </Link>
+          </li>
+          <li>
+            <Link to="/signup" onClick={() => isMobile && setMenuOpen(false)}>
+              {t("signup")}
+            </Link>
+          </li>
+        </>
+      );
+    } else {
+      // 로그인하지 않았다면
+      return (
+        <>
+          <li>
+            <Link to="/login" onClick={() => isMobile && setMenuOpen(false)}>
+              {t("login")}
+            </Link>
+          </li>
+          <li>
+            <Link to="/signup" onClick={() => isMobile && setMenuOpen(false)}>
+              {t("signup")}
+            </Link>
+          </li>
+        </>
+      );
+    }
+  };
 
   return (
     <header className="bg-brand-blue text-white py-4">
@@ -25,45 +73,7 @@ const Header = () => {
                 {t("home")}
               </Link>
             </li>
-            {user.username !== "Guest" ? (
-              <>
-                <li>
-                  <Link
-                    to="/documents"
-                    className="hover:text-brand-yellow transition-colors duration-300"
-                  >
-                    {t("documents")}
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={logout}
-                    className="hover:text-brand-yellow transition-colors duration-300"
-                  >
-                    {t("logout")}
-                  </button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <Link
-                    to="/login"
-                    className="hover:text-brand-yellow transition-colors duration-300"
-                  >
-                    {t("login")}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/signup"
-                    className="hover:text-brand-yellow transition-colors duration-300"
-                  >
-                    {t("signup")}
-                  </Link>
-                </li>
-              </>
-            )}
+            {renderMenuItems(false)}
             <li>
               <Link
                 to="/editor"
@@ -107,48 +117,7 @@ const Header = () => {
                   {t("home")}
                 </Link>
               </li>
-              {user.username !== "Guest" ? (
-                <>
-                  <li className="block px-4 py-2 text-sm hover:bg-gray-200">
-                    <Link
-                      to="/documents"
-                      onClick={() => setMenuOpen(false)}
-                      className="block w-full h-full"
-                    >
-                      {t("documents")}
-                    </Link>
-                  </li>
-                  <li className="block px-4 py-2 text-sm hover:bg-gray-200">
-                    <button
-                      onClick={logout}
-                      className="block w-full h-full text-left"
-                    >
-                      {t("logout")}
-                    </button>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li className="block px-4 py-2 text-sm hover:bg-gray-200">
-                    <Link
-                      to="/login"
-                      onClick={() => setMenuOpen(false)}
-                      className="block w-full h-full"
-                    >
-                      {t("login")}
-                    </Link>
-                  </li>
-                  <li className="block px-4 py-2 text-sm hover:bg-gray-200">
-                    <Link
-                      to="/signup"
-                      onClick={() => setMenuOpen(false)}
-                      className="block w-full h-full"
-                    >
-                      {t("signup")}
-                    </Link>
-                  </li>
-                </>
-              )}
+              {renderMenuItems(true)}
               <li className="block px-4 py-2 text-sm hover:bg-gray-200">
                 <Link
                   to="/editor"
