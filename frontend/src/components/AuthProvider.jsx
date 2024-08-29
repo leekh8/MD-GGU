@@ -79,7 +79,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiLogin(email, password);
       if (response.success) {
-        setUser({ email });
+        const loggedInUser = await apiGetUser();
+        setUser(loggedInUser);
         setAuthMessage({ status: "success", message: "loginSuccessful" });
       } else {
         handleFailureMessage(response.message);
@@ -94,7 +95,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiLogout();
-      setUser({ username: "Guest" });
+      setUser(null);
       setAuthMessage({ status: "success", message: "logoutSuccessful" });
     } catch (error) {
       setAuthMessage({ status: "error", message: "unexpectedError" });
