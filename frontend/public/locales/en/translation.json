@@ -31,5 +31,6 @@
   "registrationSuccessful": "Registration successful! \nWelcome to MD GGU.",
   "registrationFailed": "Registration failed. \nPlease try again later.",
   "loginSuccessful": "Login successful! \nWelcome back.",
-  "logoutSuccessful": "You have successfully logged out. \nSee you next time."
+  "logoutSuccessful": "You have successfully logged out. \nSee you next time.",
+  "loading": "Wait a moments please..."
 }
