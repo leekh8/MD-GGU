@@ -76,7 +76,7 @@ const SignupPage = () => {
           type="submit"
           className="w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow"
         >
-          {t("sign up")}
+          {t("signup")}
         </button>
       </form>
     </div>
