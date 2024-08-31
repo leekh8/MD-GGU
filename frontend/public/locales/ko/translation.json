@@ -32,5 +32,7 @@
   "registrationFailed": "가입에 실패했습니다. \n나중에 다시 시도해 주세요.",
   "loginSuccessful": "로그인이 성공적으로 완료되었습니다! \n다시 오신 것을 환영합니다.",
   "logoutSuccessful": "성공적으로 로그아웃되었습니다. \n다음에 또 만나요.",
-  "loading": "잠시만 기다려 주세요..."
+  "loading": "잠시만 기다려 주세요...",
+  "serverStatus": "서버 상태",
+  "adminPage": "관리자 페이지"
 }
