@@ -14,6 +14,7 @@ import DocumentDetails from "./components/DocumentDetails";
 import HomePage from "./components/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import AdminPage from "./pages/AdminPage";
 
 import { useAuth } from "./components/AuthProvider";
 
@@ -36,6 +37,12 @@ const App = () => {
           element={user ? <DocumentDetails /> : <Navigate to="/login" />}
         />
         <Route path="/editor" element={<Editor />} />
+        <Route
+          path="/admin"
+          element={
+            user && user.role === "ADMIN" ? <AdminPage /> : <Navigate to="/" />
+          }
+        />
       </Routes>
     </Router>
   );

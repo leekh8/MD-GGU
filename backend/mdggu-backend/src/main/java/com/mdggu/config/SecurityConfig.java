@@ -45,8 +45,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(requestMatcher("/api/v1/auth/.*")).permitAll()  // 인증 관련 엔드포인트는 모두 접근 가능
                         .requestMatchers(requestMatcher("/api/v1/documents/.*")).permitAll()  // 문서 관련 엔드포인트도 모두 접근 가능
-                        .requestMatchers(requestMatcher("/health")).permitAll()  // /health 엔드포인트는 인증 없이 접근 가능
-                        .requestMatchers(requestMatcher("/status")).permitAll()  // /status 엔드포인트는 인증 없이 접근 가능
+                        .requestMatchers(requestMatcher("/health")).hasRole("ADMIN")  // /health, /status 엔드포인트는 인증 없이 접근 가능
+                        .requestMatchers(requestMatcher("/status")).hasRole("ADMIN")  // /status 엔드포인트는 인증 없이 접근 가능
                         .anyRequest().authenticated()  // 그 외의 요청은 인증 필요
                 );
         return http.build();

@@ -6,13 +6,25 @@ const BACKEND_URL =
     ? process.env.VITE_BACKEND_URL
     : import.meta.env.VITE_BACKEND_URL;
 
+const apiClient = axios.create({
+  baseURL: BACKEND_URL,
+});
+
+// 엔드포인트 상수 정의
+const ENDPOINTS = {
+  REGISTER: "/api/v1/auth/register",
+  LOGIN: "/api/v1/auth/login",
+  LOGOUT: "/api/v1/auth/logout",
+  ME: "/api/v1/auth/me",
+  DOCUMENTS: "/api/v1/documents",
+  DOCUMENT_BY_ID: "/api/v1/documents/", // 동적 ID 추가 필요
+  STATUS: "/status",
+};
+
 // 사용자 인증 관련 함수들
 export function register(email, password) {
-  return axios
-    .post(`${BACKEND_URL}/api/v1/auth/register`, {
-      email,
-      password,
-    })
+  return apiClient
+    .post(ENDPOINTS.REGISTER, { email, password })
     .then((response) => response.data)
     .catch((error) => {
       console.error("Registration error: ", error.response || error);
@@ -21,8 +33,8 @@ export function register(email, password) {
 }
 
 export function login(email, password) {
-  return axios
-    .post(`${BACKEND_URL}/api/v1/auth/login`, {
+  return apiClient
+    .post(ENDPOINTS.LOGIN, {
       email,
       password,
     })
@@ -34,8 +46,8 @@ export function login(email, password) {
 }
 
 export function logout() {
-  return axios
-    .post(`${BACKEND_URL}/api/v1/auth/logout`)
+  return apiClient
+    .post(ENDPOINTS.LOGOUT)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Logout error: ", error.response || error);
@@ -44,8 +56,8 @@ export function logout() {
 }
 
 export function getUser() {
-  return axios
-    .get(`${BACKEND_URL}/api/v1/auth/me`)
+  return apiClient
+    .get(ENDPOINTS.ME)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Get user error: ", error.response || error);
@@ -55,21 +67,21 @@ export function getUser() {
 
 // 문서 관련 함수들
 export function getAllDocuments() {
-  return axios.get(`${BACKEND_URL}/api/v1/documents`);
+  return apiClient.get(ENDPOINTS.DOCUMENTS);
 }
 
 export function getDocumentById(id) {
-  return axios.get(`${BACKEND_URL}/api/v1/documents/${id}`);
+  return apiClient.get(`${ENDPOINTS.DOCUMENT_BY_ID}/${id}`);
 }
 
 export function createDocument(document) {
-  return axios.post(`${BACKEND_URL}/api/v1/documents`, document);
+  return apiClient.post(ENDPOINTS.DOCUMENTS, document);
 }
 
 export function updateDocument(id, document) {
-  return axios.put(`${BACKEND_URL}/api/v1/documents/${id}`, document);
+  return apiClient.put(`${ENDPOINTS.DOCUMENT_BY_ID}/${id}`, document);
 }
 
 export function deleteDocument(id) {
-  return axios.delete(`${BACKEND_URL}/api/v1/documents/${id}`);
+  return apiClient.delete(`${ENDPOINTS.DOCUMENT_BY_ID}/${id}`);
 }

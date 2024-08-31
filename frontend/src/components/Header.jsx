@@ -31,6 +31,17 @@ const Header = () => {
               {t("documents")}
             </Link>
           </li>
+          {user.role === "ADMIN" && (
+            <li>
+              <Link
+                to="/admin"
+                onClick={() => isMobile && setMenuOpen(false)}
+                className={hoverClass}
+              >
+                {t("admin")}
+              </Link>
+            </li>
+          )}
           <li>
             <button onClick={logout} className={hoverClass}>
               {t("logout")}
