@@ -22,19 +22,23 @@ const LoginPage = () => {
     }
 
     try {
-      await auth.login(email, password);
-      navigate("/"); // 로그인 후 홈으로 리다이렉트
-    } catch (e) {
-      if (e.message.includes("invalid_grant")) {
-        setError(t("incorrectEmailOrPassword"));
-      } else if (
-        e.message.includes("network error") ||
-        e.message.includes("server error")
-      ) {
-        setError(t("serverOrNetworkError"));
+      const response = await auth.login(email, password);
+
+
+      if (response && response.success) {
+        navigate("/"); // 로그인 후 홈으로 리다이렉트
       } else {
-        setError(t("unexpectedError"));
+        if (response && response.error.includes("invalid_grant")) {
+          setError(t("incorrectEmailOrPassword"));
+        } else if (response && response.error.includes("network error")) {
+          setError(t("serverOrNetworkError"));
+        } else {
+          setError(t("unexpectedError"));
+        }
       }
+    } catch (e) {
+
+      setError(t("unexpectedError"));
     }
   };
 
