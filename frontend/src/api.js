@@ -85,3 +85,7 @@ export function updateDocument(id, document) {
 export function deleteDocument(id) {
   return apiClient.delete(`${ENDPOINTS.DOCUMENT_BY_ID}/${id}`);
 }
+
+export function getServerStatus() {
+  return apiClient.get(ENDPOINTS.STATUS); // 서버 상태를 가져오는 요청
+}
