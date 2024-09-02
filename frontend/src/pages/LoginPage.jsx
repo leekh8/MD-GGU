@@ -25,20 +25,40 @@ const LoginPage = () => {
       const response = await auth.login(email, password);
 
 
-      if (response && response.success) {
+      if (response.status === 200) {
+        // 로그인 성공
         navigate("/"); // 로그인 후 홈으로 리다이렉트
       } else {
-        if (response && response.error.includes("invalid_grant")) {
-          setError(t("incorrectEmailOrPassword"));
-        } else if (response && response.error.includes("network error")) {
-          setError(t("serverOrNetworkError"));
+        // 로그인 실패
+        const errorData = response.data; // 서버 응답 데이터
+
+        if (errorData && errorData.error) {
+          // 서버에서 전달된 에러 메시지 사용
+          setError(errorData.error);
         } else {
+          // 예상치 못한 에러 처리
           setError(t("unexpectedError"));
         }
       }
-    } catch (e) {
+    } catch (error) {
+      console.error("Login error:", error);
 
-      setError(t("unexpectedError"));
+      if (error.response) {
+        // 서버 응답이 있는 경우 (4xx, 5xx 에러)
+        const { status } = error.response;
+        if (status === 401) {
+          // 인증 실패
+          setError(t("incorrectEmailOrPassword"));
+        } else {
+          setError(t("serverOrNetworkError"));
+        }
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우 (네트워크 에러)
+        setError(t("serverOrNetworkError"));
+      } else {
+        // 요청 생성 중 에러 발생
+        setError(t("unexpectedError"));
+      }
     }
   };
 

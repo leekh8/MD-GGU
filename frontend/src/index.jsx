@@ -1,6 +1,7 @@
 // ReactDOM을 통해 앱 마운트
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
+import { AuthProvider } from "./components/AuthProvider";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./styles.css";
@@ -14,7 +15,9 @@ root.render(
   <React.StrictMode>
     <I18nextProvider i18n={i18n}>
       <Suspense fallback={<div>Loading translations...</div>}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </Suspense>
     </I18nextProvider>
   </React.StrictMode>
