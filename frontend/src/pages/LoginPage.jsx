@@ -3,6 +3,7 @@ import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
+import axios from "axios";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -11,6 +12,19 @@ const LoginPage = () => {
   const [error, setError] = useState(""); // 에러 메시지 상태
   const auth = useAuth();
   const navigate = useNavigate();
+  const [csrfToken, setCsrfToken] = useState(null); // CSRF 토큰 상태
+
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await axios.get("/api/v1/auth/csrf"); // CSRF 토큰 가져오기
+        setCsrfToken(response.data.csrfToken);
+      } catch (error) {
+        console.error("Error fetching CSRF token:", error);
+      }
+    };
+    fetchCsrfToken();
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -22,7 +36,7 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await auth.login(email, password);
+      const response = await auth.login(email, password, csrfToken);
 
 
       if (response.status === 200) {

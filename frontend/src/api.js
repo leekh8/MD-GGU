@@ -32,12 +32,16 @@ export function register(email, password) {
     });
 }
 
-export function login(email, password) {
+export function login(email, password, csrfToken) {
   return apiClient
-    .post(ENDPOINTS.LOGIN, {
-      email,
-      password,
-    })
+    .post(
+      ENDPOINTS.LOGIN,
+      {
+        email,
+        password,
+      },
+      { headers: { "X-CSRF-Token": csrfToken } }
+    )
     .then((response) => response.data)
     .catch((error) => {
       console.error("Login error: ", error.response || error);
