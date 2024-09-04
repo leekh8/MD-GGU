@@ -56,9 +56,11 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
             );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication); // 로그인 성공 시
+            // TODO: 로그인 성공 후 사용자에게 필요한 정보(예: JWT 토큰, 사용자 정보 등)를 함께 제공하도록 수정
             return ResponseEntity.ok("User logged in successfully!");
         } catch (BadCredentialsException e) {
+            SecurityContextHolder.clearContext(); // 로그인 실패 시, SecurityContextHolder 초기화
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(messageSource.getMessage("invalidEmailOrPassword", null, LocaleContextHolder.getLocale()));
         } catch (DisabledException e) {
