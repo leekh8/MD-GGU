@@ -5,6 +5,7 @@ import com.mdggu.model.User;
 import com.mdggu.model.UserRole;
 import com.mdggu.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +36,13 @@ public class UserService {
     }
 
     public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 인증 정보가 없거나, "anonymousUser"인 경우 로그인되지 않은 것으로 간주
+        if (authentication == null || "anonymousUser".equals(authentication.getPrincipal())) {
+            return null;
+        }
+
         String email = getEmailFromSecurityContext();
         return userRepository.findByEmail(email); // 이메일로 사용자 검색
     }
