@@ -165,3 +165,28 @@ body {
 .break-line {
   white-space: pre-wrap;
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-container {
+  @apply flex flex-col items-center justify-center h-screen; /* 화면 전체 높이에 맞춰 가운데 정렬 */
+}
+
+.spinner {
+  @apply border-4 border-gray-300 rounded-full w-10 h-10 m-auto;
+  border-top-color: theme("colors.brand-blue.dark");
+  animation: spin 1s linear infinite;
+}
+
+.spinner-inner {
+  @apply border-4 border-gray-300 rounded-full w-6 h-6 m-auto;
+  border-left-color: theme("colors.brand-blue.light");
+  animation: spin 2s linear infinite reverse;
+}

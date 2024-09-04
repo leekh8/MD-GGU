@@ -5,6 +5,7 @@ import {
   logout as apiLogout,
   getUser as apiGetUser,
 } from "../api";
+import "../styles.css";
 
 // 초기 기본값 설정
 const defaultAuthContext = {
@@ -22,6 +23,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({ username: "Guest" }); // 초기값을 Guest로 설정
   const [authMessage, setAuthMessage] = useState(null);
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [progress, setProgress] = useState(0);
+  const [startTime, setStartTime] = useState(null);
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -103,8 +106,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    if (loading) {
+      setStartTime(Date.now()); // 로딩 시작 시간 기록
+
+      const timer = setInterval(() => {
+        const elapsedTime = Date.now() - startTime;
+        const estimatedTotalTime = 3000; // 예상되는 총 로딩 시간 (ms) - 필요에 따라 조정
+        const newProgress = Math.min(
+          100,
+          (elapsedTime / estimatedTotalTime) * 100
+        );
+        setProgress(newProgress);
+      }, 100); // 100ms마다 progress 업데이트
+
+      return () => clearInterval(timer); // 컴포넌트가 언마운트될 때 타이머 정리
+    } else {
+      setProgress(100); // 로딩 완료 시 progress 100으로 설정
+    }
+  }, [loading]);
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="spinner-container">
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
