@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 반응형 미디어 쿼리 */
-@media (min-width: 768px) {
-  .custom-responsive-style {
-    @apply bg-red-500 text-xl;
-  }
-}
-
 /* Base styles */
 body {
   @apply m-0 font-sans antialiased subpixel-antialiased;
@@ -24,6 +17,7 @@ code {
   padding: 0 1rem;
 }
 
+/* Components */
 @layer components {
   .nav-link {
     @apply text-white hover:text-brand-yellow transition-colors duration-300;
@@ -40,13 +34,16 @@ code {
   }
 }
 
+/* Utilities */
 @layer utilities {
   .button {
     @apply bg-brand-blue text-white font-bold py-2 px-4 rounded hover:bg-brand-blue-light;
   }
+
   .background {
     @apply bg-neutral-gray;
   }
+
   .border-box {
     @apply border-2 border-neutral-gray-dark;
   }
@@ -110,6 +107,13 @@ code {
     img {
       @apply mx-auto my-4 max-w-full;
     }
+  }
+}
+
+/* 반응형 미디어 쿼리 */
+@media (min-width: 768px) {
+  .custom-responsive-style {
+    @apply bg-red-500 text-xl;
   }
 }
 
