@@ -38,7 +38,6 @@ const LoginPage = () => {
     try {
       const response = await auth.login(email, password, csrfToken);
 
-
       if (response.status === 200) {
         // 로그인 성공
         navigate("/"); // 로그인 후 홈으로 리다이렉트
@@ -55,8 +54,6 @@ const LoginPage = () => {
         }
       }
     } catch (error) {
-      console.error("Login error:", error);
-
       if (error.response) {
         // 서버 응답이 있는 경우 (4xx, 5xx 에러)
         const { status } = error.response;

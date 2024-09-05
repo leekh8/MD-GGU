@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +34,14 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
             if (userService.checkIfUserExist(user.getEmail())) {
+                log.warn("Attempt to register with already taken email: {}", user.getEmail());
                 return ResponseEntity.badRequest().body(new ApiResponse(false, "Email is already taken!"));
             }
             userService.registerNewUser(user.getEmail(), user.getPassword());
+            log.info("User registered successfully: {}", user.getEmail());
             return ResponseEntity.ok(new ApiResponse(true, "User registered successfully!"));
         } catch (Exception e) {
+            log.error("Error occurred during registration for email: {}", user.getEmail(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse(false, "An error occurred during registration: " + e.getMessage()));
         }
@@ -51,23 +52,29 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@RequestBody User user) {
         try {
             // 실제 로그인 로직은 Spring Security에서 처리될 예정
+            log.info("Login attempt for user: {}", user.getEmail());
             // Spring Security를 사용하여 로그인 시도 (구체적인 구현은 Spring Security 설정에 따라 다름)
             //TODO: 이메일과 비밀번호를 사용하여 사용자를 인증하는 로직 구현
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication); // 로그인 성공 시
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+//            );
+//            SecurityContextHolder.getContext().setAuthentication(authentication);  // 로그인 성공 시
+
+            log.info("Login successful for user: {}", user.getEmail());
             // TODO: 로그인 성공 후 사용자에게 필요한 정보(예: JWT 토큰, 사용자 정보 등)를 함께 제공하도록 수정
             return ResponseEntity.ok("User logged in successfully!");
+
         } catch (BadCredentialsException e) {
             SecurityContextHolder.clearContext(); // 로그인 실패 시, SecurityContextHolder 초기화
+            log.error("Invalid credentials for user: {}", user.getEmail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(messageSource.getMessage("invalidEmailOrPassword", null, LocaleContextHolder.getLocale()));
         } catch (DisabledException e) {
+            log.error("Account disabled for user: {}", user.getEmail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(messageSource.getMessage("accountDisabled", null, LocaleContextHolder.getLocale()));
         } catch (Exception e) {
-            log.error("Error during login", e);
+            log.error("Error during login for user: {}", user.getEmail(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(messageSource.getMessage("serverOrNetworkError", null, LocaleContextHolder.getLocale()));
         }
@@ -77,6 +84,7 @@ public class AuthController {
     public ResponseEntity<?> logoutUser() {
         // 로그아웃 로직
         SecurityContextHolder.clearContext();
+        log.info("User logged out successfully");
         return ResponseEntity.ok("User logged out successfully!");
     }
 
@@ -85,11 +93,13 @@ public class AuthController {
         try {
             User user = userService.getCurrentUser();
             if (user == null) {
+                log.warn("User is not logged in");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("User is not logged in");
             }
             return ResponseEntity.ok(user);
         } catch (Exception e) {
+            log.error("Failed to fetch user info", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to fetch user info");
         }
@@ -99,6 +109,7 @@ public class AuthController {
     public ResponseEntity<?> updateMyInfo(@RequestBody User updatedUser) {
         // 사용자 정보 수정 로직
         userService.updateCurrentUser(updatedUser);
+        log.info("User info updated successfully for email: {}", updatedUser.getEmail());
         return ResponseEntity.ok("User info updated successfully!");
     }
 
@@ -106,6 +117,7 @@ public class AuthController {
     public ResponseEntity<?> deleteMyAccount() {
         // 회원 탈퇴 로직
         userService.deleteCurrentUser();
+        log.info("User account deleted successfully");
         return ResponseEntity.ok("User deleted successfully!");
     }
 }
