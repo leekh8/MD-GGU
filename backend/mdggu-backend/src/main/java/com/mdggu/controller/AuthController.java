@@ -31,93 +31,137 @@ public class AuthController {
     private MessageSource messageSource;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<Void>> registerUser(@RequestBody User user) {
         try {
             if (userService.checkIfUserExist(user.getEmail())) {
+
                 log.warn("Attempt to register with already taken email: {}", user.getEmail());
-                return ResponseEntity.badRequest().body(new ApiResponse(false, "Email is already taken!"));
+
+                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Email is already taken!"));
             }
             userService.registerNewUser(user.getEmail(), user.getPassword());
+
             log.info("User registered successfully: {}", user.getEmail());
-            return ResponseEntity.ok(new ApiResponse(true, "User registered successfully!"));
+
+            return ResponseEntity.ok(new ApiResponse<>(true, "User registered successfully!"));
         } catch (Exception e) {
+
             log.error("Error occurred during registration for email: {}", user.getEmail(), e);
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse(false, "An error occurred during registration: " + e.getMessage()));
+                    .body(new ApiResponse<>(false, "An error occurred during registration: " + e.getMessage()));
         }
     }
 
-
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<User>> loginUser(@RequestBody User user) {
         try {
             // 실제 로그인 로직은 Spring Security에서 처리될 예정
-            log.info("Login attempt for user: {}", user.getEmail());
             // Spring Security를 사용하여 로그인 시도 (구체적인 구현은 Spring Security 설정에 따라 다름)
-            //TODO: 이메일과 비밀번호를 사용하여 사용자를 인증하는 로직 구현
-//            Authentication authentication = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-//            );
-//            SecurityContextHolder.getContext().setAuthentication(authentication);  // 로그인 성공 시
+            log.info("Login attempt for user: {}", user.getEmail());
 
-            log.info("Login successful for user: {}", user.getEmail());
             // TODO: 로그인 성공 후 사용자에게 필요한 정보(예: JWT 토큰, 사용자 정보 등)를 함께 제공하도록 수정
-            return ResponseEntity.ok("User logged in successfully!");
+            User loggedInUser = userService.getCurrentUser(); // 로그인된 사용자 정보 가져오기
 
+            return ResponseEntity.ok(new ApiResponse<>(true, "User logged in successfully!", loggedInUser));
         } catch (BadCredentialsException e) {
             SecurityContextHolder.clearContext(); // 로그인 실패 시, SecurityContextHolder 초기화
             log.error("Invalid credentials for user: {}", user.getEmail());
+            String message = messageSource.getMessage("invalidEmailOrPassword", null, LocaleContextHolder.getLocale());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(messageSource.getMessage("invalidEmailOrPassword", null, LocaleContextHolder.getLocale()));
+                    .body(new ApiResponse<>(false, message));
         } catch (DisabledException e) {
             log.error("Account disabled for user: {}", user.getEmail());
+            String message = messageSource.getMessage("accountDisabled", null, LocaleContextHolder.getLocale());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(messageSource.getMessage("accountDisabled", null, LocaleContextHolder.getLocale()));
+                    .body(new ApiResponse<>(false, message));
         } catch (Exception e) {
             log.error("Error during login for user: {}", user.getEmail(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(messageSource.getMessage("serverOrNetworkError", null, LocaleContextHolder.getLocale()));
+                    .body(new ApiResponse<>(false, messageSource.getMessage("serverOrNetworkError", null, LocaleContextHolder.getLocale())));
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
+    public ResponseEntity<ApiResponse<Void>> logoutUser() {
         // 로그아웃 로직
         SecurityContextHolder.clearContext();
+
         log.info("User logged out successfully");
-        return ResponseEntity.ok("User logged out successfully!");
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "User logged out successfully!"));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMyInfo() {
+    public ResponseEntity<ApiResponse<User>> getMyInfo() {
         try {
             User user = userService.getCurrentUser();
             if (user == null) {
                 log.warn("User is not logged in");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("User is not logged in");
+                        .body(new ApiResponse<>(false, "User is not logged in"));
             }
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(new ApiResponse<>(true, "User info fetched successfully", user));
         } catch (Exception e) {
             log.error("Failed to fetch user info", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to fetch user info");
+                    .body(new ApiResponse<>(false, "Failed to fetch user info"));
         }
     }
 
     @PutMapping("/me")
-    public ResponseEntity<?> updateMyInfo(@RequestBody User updatedUser) {
+    public ResponseEntity<ApiResponse<Void>> updateMyInfo(@RequestBody User updatedUser) {
         // 사용자 정보 수정 로직
-        userService.updateCurrentUser(updatedUser);
-        log.info("User info updated successfully for email: {}", updatedUser.getEmail());
-        return ResponseEntity.ok("User info updated successfully!");
+        try {
+            userService.updateCurrentUser(updatedUser);
+            log.info("User info updated successfully for email: {}", updatedUser.getEmail());
+            return ResponseEntity.ok(new ApiResponse<>(true, "User info updated successfully!"));
+        } catch (Exception e) {
+            log.error("Failed to update user info", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to update user info"));
+        }
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<?> deleteMyAccount() {
+    public ResponseEntity<ApiResponse<Void>> deleteMyAccount() {
         // 회원 탈퇴 로직
-        userService.deleteCurrentUser();
-        log.info("User account deleted successfully");
-        return ResponseEntity.ok("User deleted successfully!");
+        try {
+            userService.deleteCurrentUser();
+            log.info("User account deleted successfully");
+            return ResponseEntity.ok(new ApiResponse<>(true, "User deleted successfully!"));
+        } catch (Exception e) {
+            log.error("Failed to delete user account", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to delete user account"));
+        }
+    }
+
+    @ControllerAdvice
+    public class GlobalExceptionHandler {
+
+        @Autowired
+        private MessageSource messageSource;
+
+        @ExceptionHandler(BadCredentialsException.class)
+        public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ex) {
+            SecurityContextHolder.clearContext();
+            String message = messageSource.getMessage("invalidEmailOrPassword", null, LocaleContextHolder.getLocale());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(false, message));
+        }
+
+        @ExceptionHandler(DisabledException.class)
+        public ResponseEntity<ApiResponse<Void>> handleDisabledException(DisabledException ex) {
+            String message = messageSource.getMessage("accountDisabled", null, LocaleContextHolder.getLocale());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(false, message));
+        }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "An unexpected error occurred."));
+        }
     }
 }
