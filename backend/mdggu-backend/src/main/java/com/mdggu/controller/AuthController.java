@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,13 +58,22 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<User>> loginUser(@RequestBody User user) {
         try {
-            // 실제 로그인 로직은 Spring Security에서 처리될 예정
-            // Spring Security를 사용하여 로그인 시도 (구체적인 구현은 Spring Security 설정에 따라 다름)
             log.info("Login attempt for user: {}", user.getEmail());
 
-            // TODO: 로그인 성공 후 사용자에게 필요한 정보(예: JWT 토큰, 사용자 정보 등)를 함께 제공하도록 수정
-            User loggedInUser = userService.getCurrentUser(); // 로그인된 사용자 정보 가져오기
+            // 사용자가 입력한 이메일과 비밀번호로 인증 토큰 생성
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+            );
 
+            // 인증이 성공적으로 이루어지면, SecurityContextHolder에 인증 정보 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 로그인된 사용자 정보 가져오기
+            User loggedInUser = userService.getCurrentUser();
+
+            log.info("logged In User in Auth Controller: {}", loggedInUser);
+
+            // JWT 토큰 생성 (필요시) 및 사용자 정보와 함께 응답
             return ResponseEntity.ok(new ApiResponse<>(true, "User logged in successfully!", loggedInUser));
         } catch (BadCredentialsException e) {
             SecurityContextHolder.clearContext(); // 로그인 실패 시, SecurityContextHolder 초기화
