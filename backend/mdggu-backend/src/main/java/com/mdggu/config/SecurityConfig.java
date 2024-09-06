@@ -41,10 +41,9 @@ public class SecurityConfig {
         http
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-                .csrf()
-                .and()
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(requestMatcher("/api/v1/auth/.*")).permitAll()  // 인증 관련 엔드포인트는 모두 접근 가능
+                .csrf().disable()
+                .authorizeRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/**").permitAll()   // 인증 관련 엔드포인트는 모두 접근 가능
                         .requestMatchers(requestMatcher("/api/v1/documents/.*")).permitAll()  // 문서 관련 엔드포인트도 모두 접근 가능
                         .requestMatchers(requestMatcher("/health")).hasRole("ADMIN")  // /health, /status 엔드포인트는 인증 없이 접근 가능
                         .requestMatchers(requestMatcher("/status")).hasRole("ADMIN")  // /status 엔드포인트는 인증 없이 접근 가능
