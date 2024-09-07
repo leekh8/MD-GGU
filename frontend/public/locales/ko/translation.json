@@ -9,7 +9,7 @@
   "documents": "문서함",
   "logout": "로그아웃",
   "login": "로그인",
-  "loginToYourAccount": "계정에 로그인",
+  "loginToYourAccount": "로그인",
   "password": "비밀번호",
   "incorrectEmailOrPassword": "이메일 또는 비밀번호가 잘못되었습니다.",
   "serverOrNetworkError": "요청 처리 중 문제가 발생했습니다. \n나중에 다시 시도해 주세요.",
