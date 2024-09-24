@@ -1,6 +1,6 @@
 import "./styles.css";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -17,12 +17,30 @@ import SignupPage from "./pages/SignupPage";
 import AdminPage from "./pages/AdminPage";
 
 import { useAuth } from "./components/AuthProvider";
+import SEO from "./components/SEO";
 
 const App = () => {
   const { user } = useAuth();
 
   return (
     <Router>
+      <div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <SEO
+                  title="MDGGU"
+                  description="다양한 기술 스택을 활용하여 마크다운 글을 최적화하는 MDGGU."
+                  keywords={["Markdown", "MDGGU"]}
+                />
+                <HomePage />
+              </>
+            }
+          />
+        </Routes>
+      </div>
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
