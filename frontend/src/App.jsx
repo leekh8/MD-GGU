@@ -35,7 +35,6 @@ const App = () => {
                   description="다양한 기술 스택을 활용하여 마크다운 글을 최적화하는 MDGGU."
                   keywords={["Markdown", "MDGGU"]}
                 />
-                <HomePage />
               </>
             }
           />
