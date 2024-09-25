@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build && node sitemap-generator.js",
+    "build": "vite build ",
     "serve": "vite preview",
     "test": "vitest",
     "eject": "vite eject",
