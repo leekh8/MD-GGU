@@ -20,11 +20,12 @@
     "rehype-katex": "^7.0.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^5.0.0-rc.2"
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "vite build && node sitemap-generator.js",
     "serve": "vite preview",
     "test": "vitest",
     "eject": "vite eject",
