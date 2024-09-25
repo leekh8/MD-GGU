@@ -1,6 +1,6 @@
 import "./styles.css";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
+import useAuthStore from "./store/authStore";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,11 +16,10 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import AdminPage from "./pages/AdminPage";
 
-import { useAuth } from "./components/AuthProvider";
 import SEO from "./components/SEO";
 
 const App = () => {
-  const { user } = useAuth();
+  const { isAuthenticated, role } = useAuthStore();
 
   return (
     <Router>
@@ -47,18 +46,20 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route
           path="/documents"
-          element={user ? <DocumentList /> : <Navigate to="/login" />}
+          element={
+            isAuthenticated ? <DocumentList /> : <Navigate to="/login" />
+          }
         />
         <Route
           path="/documents/:id"
-          element={user ? <DocumentDetails /> : <Navigate to="/login" />}
+          element={
+            isAuthenticated ? <DocumentDetails /> : <Navigate to="/login" />
+          }
         />
         <Route path="/editor" element={<Editor />} />
         <Route
           path="/admin"
-          element={
-            user && user.role === "ADMIN" ? <AdminPage /> : <Navigate to="/" />
-          }
+          element={role === "ADMIN" ? <AdminPage /> : <Navigate to="/" />}
         />
       </Routes>
     </Router>
