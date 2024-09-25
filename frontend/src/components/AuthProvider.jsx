@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import useAuthStore from "../store/authStore";
 import {
   register as apiRegister,
   login as apiLogin,
@@ -20,18 +21,24 @@ const defaultAuthContext = {
 export const AuthContext = createContext(defaultAuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({ username: "Guest" }); // 초기값을 Guest로 설정
+  const [user, setUser] = useState({ username: "GUEST" }); // 초기값을 GUEST로 설정
   const [authMessage, setAuthMessage] = useState(null);
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const [progress, setProgress] = useState(0);
   const [startTime, setStartTime] = useState(null);
+
+  const { setIsAuthenticated, setRole } = useAuthStore();
 
   useEffect(() => {
     const initializeUser = async () => {
       try {
         const currentUser = await apiGetUser(); // 서버에서 현재 사용자 정보 가져오기
         if (currentUser) {
-          setUser(currentUser); // 로그인된 사용자의 정보 설정
+          // FIXME: DELETE
+          console.log("AuthProvider - User state updated:", currentUser);
+
+          setIsAuthenticated(true);
+          setRole(currentUser.role || "USER"); // 사용자 역할 설정
         } else {
           setUser({ username: "Guest" }); // 로그인되지 않은 경우
         }
@@ -62,6 +69,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password) => {
     try {
       const response = await apiRegister(email, password);
+
       if (response.success) {
         setUser({ email });
         setAuthMessage({
@@ -80,16 +88,26 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      // FIXME: DELETE
+      console.log("AuthProvider - login called with email:", email);
+
       const response = await apiLogin(email, password);
-      if (response.success) {
-        const loggedInUser = await apiGetUser();
+
+      // FIXME: DELETE
+      console.log("AuthProvider - Login response:", response);
+
+      if (response.data.success) {
+        const loggedInUser = response.data.data; // response.data.data에서 사용자 정보 가져오기
         setUser(loggedInUser);
         setAuthMessage({ status: "success", message: "loginSuccessful" });
       } else {
-        handleFailureMessage(response.message);
+        handleFailureMessage(response.data.message);
       }
       return response;
     } catch (error) {
+      // FIXME: DELETE
+      console.error("AuthProvider - Login error:", error);
+
       setAuthMessage({ status: "error", message: "incorrectEmailOrPassword" });
       throw error;
     }
