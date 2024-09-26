@@ -1,4 +1,4 @@
-import { create } from "zustand/vanilla"; // zustand/vanilla에서 import
+import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
   isAuthenticated: false,
