@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ const Header = () => {
   const { t } = useTranslation();
   const { user, logout, loading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null); // 메뉴 요소에 대한 참조 생성
 
   if (loading) {
     return <div>t("loading")</div>;
@@ -76,6 +77,31 @@ const Header = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // 1. menuRef.current가 존재하고
+      // 2. 클릭된 타겟이 메뉴 내부에 포함되지 않고
+      // 3. 클릭된 타겟이 햄버거 버튼이 아니라면
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !event.target.closest(".md\\:hidden > button") // 햄버거 버튼 예외 처리
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("click", handleClickOutside);
+    } else {
+      document.removeEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [menuOpen]);
+
   return (
     <header className="bg-brand-blue text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -134,7 +160,10 @@ const Header = () => {
             </svg>
           </button>
           {menuOpen && (
-            <ul className="absolute right-0 mt-2 py-2 w-30 bg-white text-black rounded-lg shadow-lg">
+            <ul
+              ref={menuRef}
+              className="absolute right-0 mt-2 py-2 w-30 bg-white text-black rounded-lg shadow-lg"
+            >
               <li className="block px-4 py-2 text-sm hover:bg-gray-200">
                 <Link
                   to="/"
