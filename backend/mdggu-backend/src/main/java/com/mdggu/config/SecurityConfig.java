@@ -8,9 +8,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -25,6 +27,8 @@ public class SecurityConfig {
 
     @Value("${frontend.url}")
     private String frontendUrl;
+
+    private JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,13 +46,17 @@ public class SecurityConfig {
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .csrf().disable()
-                .authorizeRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()   // 인증 관련 엔드포인트는 모두 접근 가능
-                        .requestMatchers(requestMatcher("/api/v1/documents/.*")).permitAll()  // 문서 관련 엔드포인트도 모두 접근 가능
-                        .requestMatchers(requestMatcher("/health")).hasRole("ADMIN")  // /health, /status 엔드포인트는 인증 없이 접근 가능
-                        .requestMatchers(requestMatcher("/status")).hasRole("ADMIN")  // /status 엔드포인트는 인증 없이 접근 가능
-                        .anyRequest().authenticated()  // 그 외의 요청은 인증 필요
-                );
+                .authorizeRequests()
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers(requestMatcher("/api/v1/documents/.*")).permitAll()
+                .requestMatchers(requestMatcher("/health")).hasRole("ADMIN")
+                .requestMatchers(requestMatcher("/status")).hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -60,7 +68,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+//        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
