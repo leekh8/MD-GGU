@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       const response = await apiRegister(email, password);
 
       if (response.success) {
-        setUser({ email });
+        setUser(response.data); // 서버에서 받은 사용자 정보 전체를 설정
         setAuthMessage({
           status: "success",
           message: "registrationSuccessful",
@@ -97,8 +97,10 @@ export const AuthProvider = ({ children }) => {
       console.log("AuthProvider - Login response:", response);
 
       if (response.data.success) {
-        const loggedInUser = response.data.data; // response.data.data에서 사용자 정보 가져오기
-        setUser(loggedInUser);
+        const jwtToken = response.data.data; // JWT 토큰 가져오기
+        localStorage.setItem("token", jwtToken); // 로컬 스토리지에 저장
+
+        setUser(response.data.data); // 서버에서 받은 사용자 정보 전체를 설정
         setAuthMessage({ status: "success", message: "loginSuccessful" });
       } else {
         handleFailureMessage(response.data.message);
