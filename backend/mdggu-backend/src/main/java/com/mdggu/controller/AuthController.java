@@ -1,7 +1,9 @@
 // 사용자 인증 관련 API 엔드포인트
 package com.mdggu.controller;
 
+import com.mdggu.config.JwtTokenProvider;
 import com.mdggu.model.User;
+import com.mdggu.service.CustomUserDetailsService;
 import com.mdggu.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,10 +30,14 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private MessageSource messageSource;
+    private CustomUserDetailsService userDetailsService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> registerUser(@RequestBody User user) {
@@ -56,7 +63,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<User>> loginUser(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<String>> loginUser(@RequestBody User user) {
         try {
             log.info("Login attempt for user: {}", user.getEmail());
 
@@ -64,6 +71,9 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
             );
+
+            log.info("Authentication successful: {}", authentication);
+            log.info("Authentication successful for user: {}", user.getEmail());
 
             // 인증이 성공적으로 이루어지면, SecurityContextHolder에 인증 정보 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -73,8 +83,14 @@ public class AuthController {
 
             log.info("logged In User in Auth Controller: {}", loggedInUser);
 
-            // JWT 토큰 생성 (필요시) 및 사용자 정보와 함께 응답
-            return ResponseEntity.ok(new ApiResponse<>(true, "User logged in successfully!", loggedInUser));
+            // UserDetails 가져오기
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername()); // username으로 조회
+
+            // JWT 토큰 생성
+            String jwtToken = jwtTokenProvider.generateToken(userDetails);
+
+            // JWT 토큰과 함께 응답
+            return ResponseEntity.ok(new ApiResponse<>(true, "User logged in successfully!", jwtToken));
         } catch (BadCredentialsException e) {
             SecurityContextHolder.clearContext(); // 로그인 실패 시, SecurityContextHolder 초기화
             log.error("Invalid credentials for user: {}", user.getEmail());
