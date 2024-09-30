@@ -21,7 +21,7 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-    
+
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
@@ -37,24 +37,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String username = null;
+        String email = null;
         String jwtToken = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
-            username = jwtTokenProvider.extractUsername(jwtToken);
+            email = jwtTokenProvider.extractEmail(jwtToken);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
             if (jwtTokenProvider.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        userDetails, null, userDetails.getAuthorities()); // UsernamePasswordAuthenticationToken 사용
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                log.info("User authenticated successfully: {}", username);
+                log.info("User authenticated successfully: {}", email);
             } else {
-                log.warn("Authentication failed for user: {}", username);
+                log.warn("Authentication failed for user: {}", email);
             }
         }
         filterChain.doFilter(request, response);

@@ -69,7 +69,7 @@ public class AuthController {
 
             // 사용자가 입력한 이메일과 비밀번호로 인증 토큰 생성
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()) // email을 username으로 전달
             );
 
             log.info("Authentication successful: {}", authentication);
@@ -84,7 +84,7 @@ public class AuthController {
             log.info("logged In User in Auth Controller: {}", loggedInUser);
 
             // UserDetails 가져오기
-            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername()); // username으로 조회
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail()); // email로 조회
 
             // JWT 토큰 생성
             String jwtToken = jwtTokenProvider.generateToken(userDetails);
