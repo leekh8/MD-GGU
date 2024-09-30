@@ -25,7 +25,7 @@
     </appender>
 
     <!-- 기본 로그 레벨 설정 -->
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
