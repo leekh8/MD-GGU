@@ -1,5 +1,8 @@
 package com.mdggu.config;
 
+import com.mdggu.controller.AuthController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +27,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     @Value("${frontend.url}")
     private String frontendUrl;
@@ -56,7 +60,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-
+        log.info("SecurityFilterChain configured");
         return http.build();
     }
 

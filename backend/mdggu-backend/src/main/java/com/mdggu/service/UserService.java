@@ -26,7 +26,10 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User registerNewUser(String email, String password) {
+        log.debug("Attempting to register new user with email: {}", email); // 등록 시도 로그 (DEBUG 레벨)
+
         if (checkIfUserExist(email)) { // 이메일 중복 체크
+            log.warn("Registration failed: Email {} is already taken!", email); // 등록 실패 로그 (WARN 레벨)
             throw new IllegalArgumentException("Email is already taken!");
         }
         User user = new User();
@@ -38,10 +41,13 @@ public class UserService {
         String username = generateUsername(email);
         user.setUsername(username);
 
+        log.info("New user registered with email: {} and username: {}", email, username); // 등록 성공 로그 (INFO 레벨)
+
         return userRepository.save(user);
     }
 
     public boolean checkIfUserExist(String email) {
+        log.debug("Checking if user with email {} exists", email); // 사용자 존재 여부 확인 로그 (DEBUG 레벨)
         return userRepository.findByEmail(email) != null; // 이메일로 중복 체크
     }
 
@@ -57,18 +63,22 @@ public class UserService {
             count++;
         }
 
+        log.debug("Generated username {} for email {}", username, email); // 생성된 사용자 이름 로그 (DEBUG 레벨)
         return username;
     }
 
     public User getCurrentUser() {
         String email = getEmailFromSecurityContext();
         if (email == null) {
+            log.warn("getCurrentUser() called but no authenticated user found"); // 인증되지 않은 사용자 접근 시도 로그 (WARN 레벨)
             throw new AuthenticationCredentialsNotFoundException("User is not authenticated");
         }
+        log.debug("Fetching current user with email: {}", email); // 현재 사용자 정보 조회 로그 (DEBUG 레벨)
         return userRepository.findByEmail(email);
     }
 
     public void updateCurrentUser(User updatedUser) {
+        log.debug("Attempting to update current user with data: {}", updatedUser); // 사용자 정보 업데이트 시도 로그 (DEBUG 레벨)
         User currentUser = getCurrentUser();
         String newEmail = updatedUser.getEmail();
 
@@ -79,10 +89,12 @@ public class UserService {
         currentUser.setEmail(newEmail);
         currentUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         userRepository.save(currentUser);
+        log.info("User info updated successfully for email: {}", updatedUser.getEmail());
     }
 
     public void deleteCurrentUser() {
         User currentUser = getCurrentUser();
+        log.info("Deleting user account: {}", currentUser.getEmail()); // 사용자 계정 삭제 로그 (INFO 레벨)
         userRepository.delete(currentUser);
     }
 
