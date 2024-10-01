@@ -25,19 +25,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-
+    private final CustomUserDetailsService userDetailsService;
     @Autowired
     private UserService userService;
-
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
     @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private MessageSource messageSource;
-    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    public AuthController(UserService userService, JwtTokenProvider jwtTokenProvider,
+                          AuthenticationManager authenticationManager, MessageSource messageSource,
+                          CustomUserDetailsService userDetailsService) { // 생성자 추가
+        this.userDetailsService = userDetailsService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> registerUser(@RequestBody User user) {
@@ -80,7 +83,6 @@ public class AuthController {
 
             // 로그인된 사용자 정보 가져오기
             User loggedInUser = userService.getCurrentUser();
-
             log.info("logged In User in Auth Controller: {}", loggedInUser);
 
             // UserDetails 가져오기
