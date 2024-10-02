@@ -3,6 +3,7 @@ package com.mdggu.config;
 import com.mdggu.controller.AuthController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     @Value("${frontend.url}")
     private String frontendUrl;
 
+    @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
     @Bean
