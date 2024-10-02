@@ -21,30 +21,40 @@ const ENDPOINTS = {
   STATUS: "/status",
 };
 
+// apiClient 인스턴스에 인터셉터 추가
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`; // Authorization 헤더에 토큰 추가
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // 사용자 인증 관련 함수들
 export function register(email, password) {
   return apiClient
     .post(ENDPOINTS.REGISTER, { email, password })
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Registration error: ", error.response || error);
+      console.error("register error:", error.response || error); // 에러 메시지 출력
       throw error.response?.data || error;
     });
 }
 
-export function login(email, password, csrfToken) {
+export function login(email, password) {
   return apiClient
-    .post(
-      ENDPOINTS.LOGIN,
-      {
-        email,
-        password,
-      },
-      { headers: { "X-CSRF-Token": csrfToken } }
-    )
+    .post(ENDPOINTS.LOGIN, {
+      email,
+      password,
+    })
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Login error: ", error.response || error);
+      console.error("login error:", error.response || error); // 에러 메시지 출력
       throw error.response?.data || error;
     });
 }
@@ -54,7 +64,7 @@ export function logout() {
     .post(ENDPOINTS.LOGOUT)
     .then((response) => response.data)
     .catch((error) => {
-      console.error("Logout error: ", error.response || error);
+      console.error("logout error:", error.response || error); // 에러 메시지 출력
       throw error.response?.data || error;
     });
 }
@@ -62,9 +72,15 @@ export function logout() {
 export function getUser() {
   return apiClient
     .get(ENDPOINTS.ME)
-    .then((response) => response.data)
+    .then((response) => {
+      if (response.data.success) {
+        return response.data.data; // 사용자 정보 반환
+      } else {
+        throw new Error(response.data.message); // 에러 발생 시 에러 메시지와 함께 예외 throw
+      }
+    })
     .catch((error) => {
-      console.error("Get user error: ", error.response || error);
+      console.error("getUser error:", error.response || error); // 에러 메시지 출력
       throw error.response?.data || error;
     });
 }
