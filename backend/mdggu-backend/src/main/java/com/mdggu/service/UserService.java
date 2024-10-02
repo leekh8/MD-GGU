@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -101,21 +100,10 @@ public class UserService {
     private String getEmailFromSecurityContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || "anonymousUser".equals(authentication.getPrincipal())) {
-            return null; // 또는 예외 처리
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
         }
 
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername(); // Spring Security 설정에 따라 username이 email일 수 있음
-//        } else if (principal instanceof OAuth2User) {
-//            // OAuth2User의 경우 이메일을 가져오는 로직 추가
-//            Map<String, Object> attributes = ((OAuth2User) principal).getAttributes();
-//            return (String) attributes.get("email"); // 또는 설정에 따른 다른 필드를 사용
-        } else {
-            // 다른 인증 방식을 사용하는 경우 처리
-            throw new RuntimeException("User not found");
-        }
+        return authentication.getName();
     }
 }
