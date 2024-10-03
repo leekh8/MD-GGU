@@ -10,7 +10,7 @@ import "../styles.css";
 
 // 초기 기본값 설정
 const defaultAuthContext = {
-  user: { username: "Guest" },
+  user: { username: "GUEST" },
   register: () => {},
   login: () => {},
   logout: () => {},
@@ -40,11 +40,11 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
           setRole(currentUser.role || "USER"); // 사용자 역할 설정
         } else {
-          setUser({ username: "Guest" }); // 로그인되지 않은 경우
+          setUser({ username: "GUEST" }); // 로그인되지 않은 경우
         }
       } catch (error) {
         console.error("Failed to fetch user data:", error);
-        setUser({ username: "Guest" }); // 오류가 발생하면 게스트로 설정
+        setUser({ username: "GUEST" }); // 오류가 발생하면 게스트로 설정
       } finally {
         setLoading(false); // 로딩 완료
       }
@@ -100,10 +100,15 @@ export const AuthProvider = ({ children }) => {
         const jwtToken = response.data.data; // JWT 토큰 가져오기
         localStorage.setItem("token", jwtToken); // 로컬 스토리지에 저장
 
-        setUser(response.data.data); // 서버에서 받은 사용자 정보 전체를 설정
+        // 사용자 정보 가져오는 API 호출
+        const userData = await apiGetUser(); // apiGetUser 함수가 사용자 정보를 가져오는 API를 호출
+        setUser(userData);
+        setIsAuthenticated(true);
+        setRole(userData.role || "USER"); // 사용자 역할 설정
+
         setAuthMessage({ status: "success", message: "loginSuccessful" });
       } else {
-        handleFailureMessage(response.data.message);
+        handleFailureMessage(response.message);
       }
       return response;
     } catch (error) {
@@ -118,7 +123,9 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiLogout();
+      localStorage.removeItem("token"); // 로컬 스토리지에서 토큰 제거
       setUser({ username: "Guest" });
+      setIsAuthenticated(false); // 인증 상태 업데이트
       setAuthMessage({ status: "success", message: "logoutSuccessful" });
     } catch (error) {
       setAuthMessage({ status: "error", message: "unexpectedError" });
