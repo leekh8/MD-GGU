@@ -5,6 +5,8 @@ import com.mdggu.config.JwtTokenProvider;
 import com.mdggu.model.User;
 import com.mdggu.service.CustomUserDetailsService;
 import com.mdggu.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +68,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> loginUser(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<String>> loginUser(@RequestBody User user, HttpServletResponse response) { // HttpServletResponse 추가
         try {
             log.info("Login attempt for user: {}", user.getEmail());
 
@@ -91,8 +93,18 @@ public class AuthController {
             // JWT 토큰 생성
             String jwtToken = jwtTokenProvider.generateToken(userDetails);
 
-            // JWT 토큰과 함께 응답
-            return ResponseEntity.ok(new ApiResponse<>(true, "User logged in successfully!", jwtToken));
+            // HttpOnly 쿠키 생성
+            Cookie cookie = new Cookie("jwtToken", jwtToken);
+            cookie.setHttpOnly(true); // HttpOnly 속성 설정
+            cookie.setPath("/"); // 쿠키 경로 설정
+            // TODO: 만료 시간 설정 (선택 사항)
+            // cookie.setMaxAge(expiryTime);
+
+            // 응답에 쿠키 추가
+            response.addCookie(cookie);
+
+            // 응답
+            return ResponseEntity.ok(new ApiResponse<>(true, "User logged in successfully!"));
         } catch (BadCredentialsException e) {
             SecurityContextHolder.clearContext(); // 로그인 실패 시, SecurityContextHolder 초기화
             log.error("Invalid credentials for user: {}", user.getEmail());
@@ -112,9 +124,17 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logoutUser() {
+    public ResponseEntity<ApiResponse<Void>> logoutUser(HttpServletResponse response) { // HttpServletResponse 추가
         // 로그아웃 로직
         SecurityContextHolder.clearContext();
+
+        // 쿠키 제거
+        Cookie cookie = new Cookie("jwtToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 쿠키 만료
+
+        response.addCookie(cookie);
 
         log.info("User logged out successfully");
 
