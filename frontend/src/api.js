@@ -21,13 +21,27 @@ const ENDPOINTS = {
   STATUS: "/status",
 };
 
+// 쿠키에서 JWT 토큰 가져오는 함수
+function getJwtTokenFromCookie() {
+  const cookies = document.cookie.split(";");
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim();
+    if (cookie.startsWith("jwtToken=")) {
+      return cookie.substring("jwtToken=".length, cookie.length);
+    }
+  }
+  return null;
+}
+
 // apiClient 인스턴스에 인터셉터 추가
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // 로컬 스토리지에서 토큰 가져오기
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`; // Authorization 헤더에 토큰 추가
+    // 쿠키에서 JWT 토큰 가져오기
+    const jwtToken = getJwtTokenFromCookie();
+    if (jwtToken) {
+      config.headers.Authorization = `Bearer ${jwtToken}`;
     }
+
     return config;
   },
   (error) => {
