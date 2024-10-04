@@ -39,6 +39,13 @@ apiClient.interceptors.request.use(
     // 쿠키에서 JWT 토큰 가져오기
     const jwtToken = getJwtTokenFromCookie();
     if (jwtToken) {
+      const decodedToken = jwt_decode(jwtToken); // jwt-decode 라이브러리 사용
+      if (decodedToken.exp < Date.now() / 1000) {
+        // 토큰 만료
+        localStorage.removeItem("token"); // 토큰 제거
+        window.location.href = "/login"; // 로그인 페이지로 리다이렉트
+        return Promise.reject(new Error("Token expired"));
+      }
       config.headers.Authorization = `Bearer ${jwtToken}`;
     }
 
