@@ -31,9 +31,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeUser = async () => {
+      setLoading(true);
       try {
         const currentUser = await apiGetUser(); // 서버에서 현재 사용자 정보 가져오기
-        if (currentUser) {
+        if (currentUser && currentUser.email) {
           // FIXME: DELETE
           console.log("AuthProvider - User state updated:", currentUser);
 
@@ -96,8 +97,27 @@ export const AuthProvider = ({ children }) => {
       // FIXME: DELETE
       console.log("AuthProvider - Login response:", response);
 
-      if (response.data.success) {
-        const jwtToken = response.data.data; // JWT 토큰 가져오기
+      if (response.success) {
+        // 쿠키에서 JWT 토큰 가져오기
+        const cookies = document.cookie.split(";");
+        let jwtToken = null;
+
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.startsWith("jwtToken=")) {
+            jwtToken = cookie.substring("jwtToken=".length, cookie.length);
+            break;
+          }
+
+          // FIXME: DELETE
+          console.log("AuthProvider - second cookies:", cookies);
+          console.log("AuthProvider - second jwtToken:", jwtToken);
+        }
+
+        // FIXME: DELETE
+        console.log("AuthProvider - out of for loop cookies:", cookies);
+        console.log("AuthProvider - jwtToken:", jwtToken);
+
         localStorage.setItem("token", jwtToken); // 로컬 스토리지에 저장
 
         // 사용자 정보 가져오는 API 호출
