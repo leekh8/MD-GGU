@@ -1,5 +1,6 @@
 // 프론트엔드와 백엔드 간의 통신 담당
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const BACKEND_URL =
   typeof process !== "undefined" && process.env.VITE_BACKEND_URL
@@ -39,7 +40,7 @@ apiClient.interceptors.request.use(
     // 쿠키에서 JWT 토큰 가져오기
     const jwtToken = getJwtTokenFromCookie();
     if (jwtToken) {
-      const decodedToken = jwt_decode(jwtToken); // jwt-decode 라이브러리 사용
+      const decodedToken = jwtDecode(jwtToken); // jwt-decode 라이브러리 사용
       if (decodedToken.exp < Date.now() / 1000) {
         // 토큰 만료
         localStorage.removeItem("token"); // 토큰 제거
