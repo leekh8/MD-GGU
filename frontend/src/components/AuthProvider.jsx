@@ -118,8 +118,6 @@ export const AuthProvider = ({ children }) => {
         console.log("AuthProvider - out of for loop cookies:", cookies);
         console.log("AuthProvider - jwtToken:", jwtToken);
 
-        localStorage.setItem("token", jwtToken); // 로컬 스토리지에 저장
-
         // 사용자 정보 가져오는 API 호출
         const userData = await apiGetUser(); // apiGetUser 함수가 사용자 정보를 가져오는 API를 호출
         setUser(userData);
@@ -143,7 +141,6 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiLogout();
-      localStorage.removeItem("token"); // 로컬 스토리지에서 토큰 제거
       setUser({ username: "Guest" });
       setIsAuthenticated(false); // 인증 상태 업데이트
       setAuthMessage({ status: "success", message: "logoutSuccessful" });
