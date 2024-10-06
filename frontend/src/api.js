@@ -9,6 +9,7 @@ const BACKEND_URL =
 
 const apiClient = axios.create({
   baseURL: BACKEND_URL,
+  withCredentials: true, // 쿠키를 포함하여 요청 보내기
 });
 
 // 엔드포인트 상수 정의
