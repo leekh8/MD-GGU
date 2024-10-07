@@ -96,8 +96,8 @@ export function getUser() {
   return apiClient
     .get(ENDPOINTS.ME)
     .then((response) => {
-      if (response.data.success) {
-        return response.data.data; // 사용자 정보 반환
+      if (response.success) {
+        return response.data; // 사용자 정보 반환
       } else {
         throw new Error(response.data.message); // 에러 발생 시 에러 메시지와 함께 예외 throw
       }
