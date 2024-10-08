@@ -2,6 +2,7 @@ package com.mdggu.config;
 
 import com.mdggu.controller.AuthController;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -25,28 +26,33 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-public class JwtTokenProvider {
+public class TokenProvider {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
     public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, accessTokenExpiration);
+        String accessToken = generateToken(userDetails, accessTokenExpiration);
+        log.info("Generated access token: {}", accessToken); // Access Token 생성 로그 추가
+        return accessToken;
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, refreshTokenExpiration);
+        String refreshToken = generateToken(userDetails, refreshTokenExpiration);
+        log.info("Generated refresh token: {}", refreshToken); // Refresh Token 생성 로그 추가
+        return refreshToken;
     }
 
     public String generateCsrfToken(Authentication authentication) {
-        // CSRF 토큰 생성 (예: UUID 사용)
+        // CSRF 토큰 생성 (UUID 사용)
         String csrfToken = java.util.UUID.randomUUID().toString();
+        log.info("Generated CSRF token: {}", csrfToken);
         return csrfToken;
     }
 
@@ -72,12 +78,13 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-                 Collection<? extends GrantedAuthority> authorities =
+        Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("auth").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
         User principal = new User(claims.getSubject(), "", authorities);
+        log.info("Authenticated user: {}", principal.getUsername()); // 인증된 사용자 정보 로그 추가
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
@@ -86,11 +93,11 @@ public class JwtTokenProvider {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(cookieName)) {
-                    return cookie.getValue();
+                    return cookie.getValue(); // 찾으면 바로 반환
                 }
             }
         }
-               return null;
+        return null;
     }
 
     public boolean validateToken(String token) {
@@ -107,42 +114,3 @@ public class JwtTokenProvider {
     }
 }
 
-    private String createToken(Map<String, Object> claims, String subject) {
-        Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
-        Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-}
