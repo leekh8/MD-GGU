@@ -1,6 +1,5 @@
 package com.mdggu.config;
 
-import com.mdggu.controller.AuthController;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider {
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    private static final Logger log = LoggerFactory.getLogger(TokenProvider.class);
     @Value("${jwt.secret}")
     private String secretKey;
 
