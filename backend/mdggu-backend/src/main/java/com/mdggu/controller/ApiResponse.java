@@ -32,6 +32,10 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
+    public T getData() {
+        return data;
+    }
+
     public void setData(T data) {
         this.data = data;
     }
