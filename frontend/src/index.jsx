@@ -5,7 +5,6 @@ import { AuthProvider } from "./components/AuthProvider";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./styles.css";
-import "./i18n"; // i18n 초기화 파일 import
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n"; // 초기화된 i18n 인스턴스 import
 

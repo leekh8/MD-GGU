@@ -3,7 +3,6 @@ import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet";
-import axios from "axios";
 
 const LoginPage = () => {
   const { t } = useTranslation();
