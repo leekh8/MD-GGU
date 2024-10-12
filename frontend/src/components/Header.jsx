@@ -11,7 +11,7 @@ const Header = () => {
   const menuRef = useRef(null); // 메뉴 요소에 대한 참조 생성
 
   if (loading) {
-    return <div>t("loading")</div>;
+    return <div>{t("loading")}</div>;
   }
 
   const renderMenuItems = (isMobile) => {
@@ -19,7 +19,8 @@ const Header = () => {
       ? "block px-4 py-2 text-sm hover:bg-gray-200" // 모바일 호버 스타일
       : "hover:text-brand-yellow transition-colors duration-300"; // 일반 호버 스타일
 
-    if (user.username !== "Guest") {
+    // user 객체가 undefined인지 확인
+    if (user && user.username !== "Guest") {
       // 로그인 했다면
       return (
         <>

@@ -19,7 +19,7 @@ const HomePage = () => {
         {t("welcome to mdggu")}
       </h1>
       <p className="text-xl text-center text-brand-gray mb-8">
-        {user.username !== "Guest"
+        {user && user.username !== "GUEST"
           ? t("welcomeUser", { username: user.username })
           : t("Explore our features to optimize your markdown documents!")}
       </p>
