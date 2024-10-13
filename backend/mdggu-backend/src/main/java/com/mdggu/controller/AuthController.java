@@ -25,6 +25,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -44,6 +47,15 @@ public class AuthController {
         this.tokenProvider = tokenProvider; // TokenProvider 초기화
         this.authenticationManager = authenticationManager; // authenticationManager 초기화
         this.messageSource = messageSource; // messageSource 초기화
+    }
+
+    // 유효한 이메일 형식인지 검사하는 메서드
+    private boolean isValidEmail(String email) {
+        // 정규 표현식을 사용하여 이메일 형식 검증
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     // Access Token 갱신 API
@@ -80,6 +92,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> registerUser(@RequestBody User user) {
+        // 이메일 형식 검증
+        if (!isValidEmail(user.getEmail())) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid email format"));
+        }
+        // 비밀번호 길이 검증
+        if (user.getPassword().length() < 8) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Password must be at least 8 characters long"));
+        }
         try {
             if (userService.checkIfUserExist(user.getEmail())) {
 
