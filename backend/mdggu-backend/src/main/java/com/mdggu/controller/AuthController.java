@@ -15,6 +15,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -225,6 +226,7 @@ public class AuthController {
     }
 
     @PutMapping("/me")
+    @PreAuthorize("hasRole('USER')") // USER 역할을 가진 사용자만 접근 가능
     public ResponseEntity<ApiResponse<Void>> updateMyInfo(@RequestBody User updatedUser) {
         // 사용자 정보 수정 로직
         try {
