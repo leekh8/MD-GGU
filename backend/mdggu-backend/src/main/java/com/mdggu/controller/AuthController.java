@@ -82,7 +82,7 @@ public class AuthController {
             response.setHeader("X-CSRF-TOKEN", csrfToken);
 
             // 응답 본문에 Access Token, CSRF Token 포함
-            LoginResponse loginResponse = new LoginResponse(accessToken, csrfToken);
+            LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken, csrfToken);
             log.info("New access token and CSRF token generated"); // 로그 추가
             return ResponseEntity.ok(new ApiResponse<>(true, "Access token refreshed successfully!", loginResponse));
         } else {
@@ -150,7 +150,7 @@ public class AuthController {
             // CSRF Token 생성
             String csrfToken = tokenProvider.generateCsrfToken(authentication);
 
-            // HttpOnly 쿠키에 Refresh Token, CSRF Token 저장
+            // HttpOnly 쿠키에 Refresh Token 저장
             Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
             refreshTokenCookie.setHttpOnly(true); // HttpOnly 속성 설정
             refreshTokenCookie.setPath("/"); // 쿠키 경로 설정
@@ -159,18 +159,12 @@ public class AuthController {
             // 응답에 쿠키 추가
             response.addCookie(refreshTokenCookie);
 
-            Cookie csrfTokenCookie = new Cookie("csrfToken", csrfToken);
-            csrfTokenCookie.setHttpOnly(true);
-            csrfTokenCookie.setPath("/");
-            csrfTokenCookie.setMaxAge(60 * 60 * 24 * 7); // 7일
-            response.addCookie(csrfTokenCookie);
-
             // 응답 헤더에 Access Token, CSRF Token 포함
             response.setHeader("Authorization", "Bearer " + accessToken);
             response.setHeader("X-CSRF-TOKEN", csrfToken);
 
-            // 응답 본문에 Access Token, CSRF Token 포함
-            LoginResponse loginResponse = new LoginResponse(accessToken, csrfToken); // 새로운 응답 객체 생성
+            // 응답 본문에 Access Token, Refresh Token, CSRF Token 포함
+            LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken, csrfToken); // 새로운 응답 객체 생성
             return ResponseEntity.ok(new ApiResponse<>(true, "User logged in successfully!", loginResponse));
         } catch (BadCredentialsException e) {
             SecurityContextHolder.clearContext(); // 로그인 실패 시, SecurityContextHolder 초기화
