@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -61,6 +62,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/documents/**").permitAll() // 문서 관련 API는 모두 허용 (임시)
                 .requestMatchers("/health").hasRole("ADMIN")
                 .requestMatchers("/status").hasRole("ADMIN")
+                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터 추가
@@ -72,8 +74,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용된 origin 설정
-//        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
+//        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용된 origin 설정
+        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용된 HTTP 메서드 설정
         configuration.setAllowedHeaders(List.of("*")); // 허용된 헤더 설정
         configuration.setAllowCredentials(true); // 자격 증명 허용
