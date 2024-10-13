@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = tokenProvider.resolveToken(request, "jwtToken"); // 토큰 가져오기 (쿠키 이름 수정)
+        String token = tokenProvider.resolveToken(request, "refreshToken"); // 토큰 가져오기
         if (token != null && tokenProvider.validateToken(token)) { // 토큰 검증
             Authentication auth = tokenProvider.getAuthentication(token); // 인증 정보 가져오기
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
