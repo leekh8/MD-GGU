@@ -30,27 +30,23 @@ export const AuthProvider = ({ children }) => {
   const { setIsAuthenticated, setRole } = useAuthStore();
 
   useEffect(() => {
-    const initializeUser = async () => {
+    const initializeUser = async (jwtToken = null) => {
       setLoading(true);
       try {
-        const currentUser = await apiGetUser(); // 서버에서 현재 사용자 정보 가져오기
-        if (currentUser && currentUser.email) {
-          // FIXME: DELETE
-          console.log("AuthProvider - User state updated:", currentUser);
-
-          setIsAuthenticated(true);
-          setRole(currentUser.role || "USER"); // 사용자 역할 설정
-        } else {
-          setUser({ username: "GUEST" }); // 로그인되지 않은 경우
-        }
+        const config = jwtToken
+          ? { headers: { Authorization: `Bearer ${jwtToken}` } }
+          : {};
+        const currentUser = await apiGetUser(config); // 서버에서 현재 사용자 정보 가져오기 위해 apiGetUser 호출 시 config 전달
+        setUser(currentUser);
+        setIsAuthenticated(true);
+        setRole(currentUser.role || "USER");
       } catch (error) {
-        console.error("Failed to fetch user data:", error);
+        console.error("AuthProvider - Failed to fetch user data:", error);
         setUser({ username: "GUEST" }); // 오류가 발생하면 게스트로 설정
       } finally {
         setLoading(false); // 로딩 완료
       }
     };
-
     initializeUser();
   }, []);
 
