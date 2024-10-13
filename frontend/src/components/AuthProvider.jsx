@@ -86,50 +86,30 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      // FIXME: DELETE
-      console.log("AuthProvider - login called with email:", email);
-
       const response = await apiLogin(email, password);
-
-      // FIXME: DELETE
-      console.log("AuthProvider - Login response:", response);
-
       if (response.success) {
-        // 쿠키에서 JWT 토큰 가져오기
-        const cookies = document.cookie.split(";");
-        let jwtToken = null;
+        const { accessToken } = response.data; // 응답 본문에서 Access Token 추출
+        localStorage.setItem("accessToken", accessToken); // localStorage에 Access Token 저장
 
-        for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          if (cookie.startsWith("jwtToken=")) {
-            jwtToken = cookie.substring("jwtToken=".length, cookie.length);
-            break;
-          }
+        // 쿠키에서 Refresh Token 가져오기
+        const refreshToken = getCookie("refreshToken");
 
-          // FIXME: DELETE
-          console.log("AuthProvider - second cookies:", cookies);
-          console.log("AuthProvider - second jwtToken:", jwtToken);
-        }
+        // 응답 헤더에서 CSRF Token 가져오기
+        const csrfToken = response.headers
+          ? response.headers["X-Csrf-Token"]
+          : undefined; // response.headers가 undefined인 경우 처리
 
-        // FIXME: DELETE
-        console.log("AuthProvider - out of for loop cookies:", cookies);
-        console.log("AuthProvider - jwtToken:", jwtToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("csrfToken", csrfToken);
 
-        // 사용자 정보 가져오는 API 호출
-        const userData = await apiGetUser(); // apiGetUser 함수가 사용자 정보를 가져오는 API를 호출
-        setUser(userData);
-        setIsAuthenticated(true);
-        setRole(userData.role || "USER"); // 사용자 역할 설정
-
+        initializeUser(accessToken); // Access Token으로 사용자 정보 초기화
         setAuthMessage({ status: "success", message: "loginSuccessful" });
       } else {
         handleFailureMessage(response.message);
       }
-      return response;
+      return response; // then 메서드에서 response 반환
     } catch (error) {
-      // FIXME: DELETE
       console.error("AuthProvider - Login error:", error);
-
       setAuthMessage({ status: "error", message: "incorrectEmailOrPassword" });
       throw error;
     }
