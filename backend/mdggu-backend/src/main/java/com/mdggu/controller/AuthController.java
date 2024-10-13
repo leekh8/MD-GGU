@@ -196,12 +196,17 @@ public class AuthController {
         SecurityContextHolder.clearContext();
 
         // 쿠키 제거
-        Cookie cookie = new Cookie("jwtToken", null);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 쿠키 만료
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0); // 쿠키 만료
+        response.addCookie(refreshTokenCookie);
 
-        response.addCookie(cookie);
+        Cookie csrfTokenCookie = new Cookie("csrfToken", null);
+        csrfTokenCookie.setHttpOnly(true);
+        csrfTokenCookie.setPath("/");
+        csrfTokenCookie.setMaxAge(0); // 쿠키 만료
+        response.addCookie(csrfTokenCookie);
 
         log.info("User logged out successfully");
 
