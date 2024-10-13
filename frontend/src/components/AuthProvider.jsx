@@ -5,6 +5,7 @@ import {
   login as apiLogin,
   logout as apiLogout,
   getUser as apiGetUser,
+  getCookie,
 } from "../api";
 import "../styles.css";
 
