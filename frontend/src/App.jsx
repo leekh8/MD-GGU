@@ -15,6 +15,7 @@ import HomePage from "./components/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import AdminPage from "./pages/AdminPage";
+import MyPage from "./pages/MyPage";
 
 import SEO from "./components/SEO";
 
@@ -42,8 +43,9 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/mypage" element={<MyPage />} />
         <Route
           path="/documents"
           element={
