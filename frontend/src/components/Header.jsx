@@ -33,6 +33,20 @@ const Header = () => {
               {t("documents")}
             </Link>
           </li>
+          <li>
+            <Link
+              to="/mypage"
+              onClick={() => isMobile && setMenuOpen(false)}
+              className={hoverClass}
+            >
+              {t("myPage")}
+            </Link>
+          </li>
+          <li>
+            <button onClick={logout} className={hoverClass}>
+              {t("logout")}
+            </button>
+          </li>
           {user.role === "ADMIN" && (
             <li>
               <Link
@@ -44,11 +58,6 @@ const Header = () => {
               </Link>
             </li>
           )}
-          <li>
-            <button onClick={logout} className={hoverClass}>
-              {t("logout")}
-            </button>
-          </li>
         </>
       );
     } else {
