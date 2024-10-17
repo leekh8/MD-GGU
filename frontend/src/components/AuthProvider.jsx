@@ -127,6 +127,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = async (updatedUser) => {
+    try {
+      const response = await apiUpdateUser(updatedUser); // api.js에 있는 apiUpdateUser 함수 호출
+      setUser(response.data); // 업데이트된 사용자 정보로 user 상태 업데이트
+    } catch (error) {
+      // 업데이트 실패 시 에러 처리
+      console.error("AuthProvider - Failed to update user data:", error);
+      throw new Error(error.message || "Failed to update profile"); // 에러 메시지 전달
+    }
+  };
+
   useEffect(() => {
     if (loading) {
       setStartTime(Date.now()); // 로딩 시작 시간 기록
@@ -158,7 +169,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, register, login, logout, authMessage, setAuthMessage }}
+      value={{
+        user,
+        register,
+        login,
+        logout,
+        authMessage,
+        setAuthMessage,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>
