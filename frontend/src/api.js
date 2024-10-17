@@ -149,6 +149,26 @@ export function getUser(config = {}) {
   }
 }
 
+export const apiUpdateUser = async (updatedUser) => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const csrfToken = localStorage.getItem("csrfToken");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-CSRF-TOKEN": csrfToken,
+      },
+    };
+
+    const response = await apiClient.put(ENDPOINTS.ME, updatedUser, config);
+    return response.data;
+  } catch (error) {
+    console.error("API - Error in updateUser:", error.response || error);
+    throw error.response?.data || error;
+  }
+};
+
 // Access Token 갱신 함수
 const refreshAccessToken = async () => {
   try {
