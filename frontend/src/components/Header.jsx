@@ -20,7 +20,7 @@ const Header = () => {
       : "hover:text-brand-yellow transition-colors duration-300"; // 일반 호버 스타일
 
     // user 객체가 undefined인지 확인
-    if (user && user.username !== "Guest") {
+    if (user && user.role !== "Guest") {
       // 로그인 했다면
       return (
         <>
@@ -41,6 +41,11 @@ const Header = () => {
             >
               {t("myPage")}
             </Link>
+          </li>
+          <li>
+            <span className={hoverClass}>
+              {t("loggedInAs")} {user.username}
+            </span>
           </li>
           <li>
             <button onClick={logout} className={hoverClass}>
