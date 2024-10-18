@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         const currentUser = await apiGetUser(config); // 서버에서 현재 사용자 정보 가져오기 위해 apiGetUser 호출 시 config 전달
         setUser(currentUser);
         setIsAuthenticated(true);
-        setRole(currentUser.role || "USER");
+        setRole(currentUser.role);
       } catch (error) {
         console.error("AuthProvider - Failed to fetch user data:", error);
         setUser({ username: "GUEST" }); // 오류가 발생하면 게스트로 설정
