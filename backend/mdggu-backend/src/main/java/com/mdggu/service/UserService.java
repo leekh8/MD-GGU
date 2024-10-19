@@ -79,13 +79,31 @@ public class UserService {
     public void updateCurrentUser(User updatedUser) {
         log.debug("Attempting to update current user with data: {}", updatedUser); // 사용자 정보 업데이트 시도 로그 (DEBUG 레벨)
         User currentUser = getCurrentUser();
+
         String newEmail = updatedUser.getEmail();
+        String newUsername = updatedUser.getUsername(); // 새로운 닉네임
+
+        // 닉네임 중복 확인
+        if (!currentUser.getUsername().equals(newUsername) && userRepository.findByUsername(newUsername) != null) {
+            throw new IllegalArgumentException("Username is already taken!");
+        }
+
+        // 닉네임 길이 제한 (2~20자)
+        if (newUsername.length() < 2 || newUsername.length() > 20) {
+            throw new IllegalArgumentException("Username must be between 2 and 20 characters long");
+        }
+
+        // 특수 문자 제한 (영숫자와 일부 특수 문자만 허용)
+        if (!newUsername.matches("^[a-zA-Z0-9._-]+$")) {
+            throw new IllegalArgumentException("Username can only contain alphanumeric characters and '.', '_', '-'");
+        }
 
         if (!currentUser.getEmail().equals(newEmail) && checkIfUserExist(newEmail)) {
             throw new IllegalArgumentException("Email is already taken!");
         }
 
         currentUser.setEmail(newEmail);
+        currentUser.setUsername(newUsername);
         currentUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         userRepository.save(currentUser);
         log.info("User info updated successfully for email: {}", updatedUser.getEmail());
