@@ -19,6 +19,18 @@ const MyPage = () => {
     }
   }, [user]);
 
+  // 랜덤 닉네임 생성 함수
+  const generateRandomNickname = () => {
+    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let nickname = "";
+    for (let i = 0; i < 10; i++) {
+      nickname += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    setUsername(nickname);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -67,15 +79,24 @@ const MyPage = () => {
           >
             {t("username")}
           </label>
-          <input
-            type="text"
-            id="username"
-            placeholder={t("username")}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:  
+          <div className="flex">
+            <input
+              type="text"
+              id="username"
+              placeholder={t("username")}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:  
 ring-brand-blue focus:border-brand-blue sm:text-sm"
-          />
+            />{" "}
+            <button
+              type="button"
+              onClick={generateRandomNickname}
+              className="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded shadow"
+            >
+              {t("generate")}
+            </button>
+          </div>
         </div>
         <div>
           <label
