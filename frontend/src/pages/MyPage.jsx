@@ -8,6 +8,7 @@ const MyPage = () => {
   const { user, updateUser } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
+  const [method, setMethod] = useState("deep_learning"); // 닉네임 생성 방식 상태
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,15 +21,32 @@ const MyPage = () => {
   }, [user]);
 
   // 랜덤 닉네임 생성 함수
-  const generateRandomNickname = () => {
-    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-    let nickname = "";
-    for (let i = 0; i < 10; i++) {
-      nickname += characters.charAt(
-        Math.floor(Math.random() * characters.length)
+  const generateRandomNickname = async () => {
+    const method = document.getElementById("method").value; // 닉네임 생성 방식 선택
+    const seedText = document.getElementById("seedText").value; // 시작 문자열 입력
+    const numChars = document.getElementById("numChars").value; // 닉네임 길이 입력
+
+    try {
+      const response = await fetch(
+        `/generate_nickname?method=${method}&seed_text=${seedText}&num_chars=${numChars}`
       );
+      const data = await response.json();
+
+      if (data.error) {
+        alert(data.error); // 에러 메시지 표시
+      } else {
+        setUsername(data.nickname); // 생성된 닉네임 설정
+      }
+    } catch (error) {
+      console.error("닉네임 생성 실패:", error);
+      alert("닉네임 생성에 실패했습니다.");
     }
-    setUsername(nickname);
+  };
+
+  const toggleMethod = () => {
+    setMethod((prevMethod) =>
+      prevMethod === "deep_learning" ? "markov_chain" : "deep_learning"
+    );
   };
 
   const handleSubmit = async (event) => {
@@ -88,10 +106,13 @@ const MyPage = () => {
               onChange={(e) => setUsername(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:  
 ring-brand-blue focus:border-brand-blue sm:text-sm"
-            />{" "}
+            />
             <button
               type="button"
-              onClick={generateRandomNickname}
+              onClick={() => {
+                generateRandomNickname();
+                toggleMethod();
+              }} // 버튼 클릭 시 닉네임 생성 및 방식 전환
               className="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded shadow"
             >
               {t("generate")}
