@@ -16,19 +16,27 @@
 # 생성된 닉네임이 기존 닉네임이나 다른 사용자의 닉네임과 중복되지 않는지 확인한다.
 
 from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+import numpy as np
+
+# 모델과 토크나이저 로드
+model = load_model('nickname_generator.keras')
+
+max_length = 10
 
 # 닉네임 생성 함수
 
 
 def generate_nickname_dl(seed_text, num_chars=10):  # seed_text를 시작 문자열로 받음
-    # 딥러닝 모델 로드
-    model = load_model('nickname_generator.keras')
-
     for _ in range(num_chars):
         token_list = tokenizer.texts_to_sequences([seed_text])[0]
         token_list = pad_sequences(
             [token_list], maxlen=max_length - 1, padding='pre')
-        predicted = model.predict_classes(token_list, verbose=0)
+
+        # 예측 수행 (predict_classes는 더 이상 사용되지 않음)
+        predicted_probs = model.predict(token_list, verbose=0)
+        predicted = np.argmax(predicted_probs, axis=-1)
+
         output_word = ""
         for word, index in tokenizer.word_index.items():
             if index == predicted:

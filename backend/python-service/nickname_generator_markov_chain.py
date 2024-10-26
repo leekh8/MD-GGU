@@ -41,7 +41,7 @@ class MarkovChain:
         while True:
             choices = self.transitions[state]
             total = sum(choices.values())
-            probs = {char: count/total for char, count in choices.items()}
+            probs = {char: count / total for char, count in choices.items()}
             next_char = random.choices(
                 list(probs.keys()), weights=probs.values())[0]
             if next_char == "$":
@@ -51,9 +51,9 @@ class MarkovChain:
         return nickname
 
 
-# 닉네임 데이터
-nicknames = ["멋쟁이사자", "푸른하늘", "달빛요정", "별똥별", "밤하늘여행자"]
+# # 닉네임 데이터
+# nicknames = ["멋쟁이사자", "푸른하늘", "달빛요정", "별똥별", "밤하늘여행자"]
 
-# Markov Chain 모델 생성 및 학습
-model = MarkovChain(order=2)
-model.train(nicknames)
+# # Markov Chain 모델 생성 및 학습
+# model = MarkovChain(order=2)
+# model.train(nicknames)
