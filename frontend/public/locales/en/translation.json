@@ -38,5 +38,7 @@
   "logoutSuccessful": "You have successfully logged out. \nSee you next time.",
   "loading": "Wait a moments please...",
   "serverStatus": "Server Status",
-  "adminPage": "Admin Page"
+  "adminPage": "Admin Page",
+  "lightMode": "Light Mode",
+  "darkMode": "Dark Mode"
 }

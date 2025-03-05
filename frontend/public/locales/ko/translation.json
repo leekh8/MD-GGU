@@ -38,5 +38,7 @@
   "logoutSuccessful": "성공적으로 로그아웃되었습니다. \n다음에 또 만나요.",
   "loading": "잠시만 기다려 주세요...",
   "serverStatus": "서버 상태",
-  "adminPage": "관리자 페이지"
+  "adminPage": "관리자 페이지",
+  "lightMode": "라이트 모드",
+  "darkMode": "다크 모드"
 }
