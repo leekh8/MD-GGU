@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import AuthMessage from "./AuthMessage";
 
 const HomePage = () => {
@@ -11,9 +11,11 @@ const HomePage = () => {
 
   return (
     <div className="container mx-auto my-4 px-4 py-8">
-      <Helmet>
-        <title>{t("welcome to mdggu")}</title>
-      </Helmet>
+      <HelmetProvider>
+        <Helmet>
+          <title>{t("welcome to mdggu")}</title>
+        </Helmet>
+      </HelmetProvider>
       <AuthMessage /> {/* 메시지 표시 컴포넌트 */}
       <h1 className="text-3xl font-bold text-center text-brand-blue mb-6">
         {t("welcome to mdggu")}

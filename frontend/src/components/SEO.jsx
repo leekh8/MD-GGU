@@ -1,5 +1,5 @@
 import React from "react";
-import { Helmet } from "react-helmet";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 
 const SEO = ({ title, description, keywords }) => {
   const url = window.location.href;
@@ -24,22 +24,24 @@ const SEO = ({ title, description, keywords }) => {
   };
 
   return (
-    <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords.join(", ")} />
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={imageUrl} />
-      <meta property="og:url" content={url} />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <HelmetProvider>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="keywords" content={keywords.join(", ")} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:url" content={url} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-      {/* JSON-LD 구조화 데이터 */}
-      <script type="application/ld+json">
-        {JSON.stringify(structuredData)}
-      </script>
-    </Helmet>
+        {/* JSON-LD 구조화 데이터 */}
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
+    </HelmetProvider>
   );
 };
 
