@@ -2,43 +2,51 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthProvider";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 
 const SignupPage = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const auth = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError("");
 
     if (!email || !password) {
-      auth.setAuthMessage(t("allFieldsRequired")); // 전역 상태로 메시지 설정
+      setError(t("allFieldsRequired"));
       return;
     }
 
     try {
-      const response = await auth.register(email, password);
-      if (response.success) {
-        navigate("/"); // 회원 가입 후 홈으로 리다이렉트
-      }
+      await auth.register(email, password); // Firebase 회원 가입
+      auth.setAuthMessage({
+        status: "success",
+        message: t("registrationSuccessful"),
+      });
+      navigate("/"); // 회원 가입 후 홈으로 리다이렉트
     } catch (e) {
-      // 실패 메시지는 AuthProvider에서 처리되므로 추가 처리 필요 없음
+      console.error("SignupPage - Registration error:", e);
+      setError(t("emailAlreadyTaken")); // 이메일이 중복되었을 때 기본 메시지
     }
   };
 
   return (
     <div className="max-w-lg mx-auto mt-10 px-4 py-8 shadow-lg rounded-lg">
-      <Helmet>
-        <title>
-          {t("mdggu")} ・ {t("signup")}
-        </title>
-      </Helmet>
+      <HelmetProvider>
+        <Helmet>
+          <title>
+            {t("mdggu")} ・ {t("signup")}
+          </title>
+        </Helmet>
+      </HelmetProvider>
       <h1 className="text-xl font-semibold text-center text-brand-blue">
         {t("sign up for mdggu")}
       </h1>
+      {error && <p className="break-line text-red-500 text-center">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label

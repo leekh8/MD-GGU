@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../components/AuthProvider";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 
 const MyPage = () => {
   const { t } = useTranslation();
@@ -80,11 +80,13 @@ const MyPage = () => {
 
   return (
     <div className="max-w-lg mx-auto mt-10 px-4 py-8 shadow-lg rounded-lg">
-      <Helmet>
-        <title>
-          {t("mdggu")} ・ {t("myPage")}
-        </title>
-      </Helmet>
+      <HelmetProvider>
+        <Helmet>
+          <title>
+            {t("mdggu")} ・ {t("myPage")}
+          </title>
+        </Helmet>
+      </HelmetProvider>
       <h1 className="text-xl font-semibold text-center text-brand-blue">
         {t("myPage")}
       </h1>

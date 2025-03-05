@@ -1,6 +1,5 @@
 import "./styles.css";
-import React from "react";
-import useAuthStore from "./store/authStore";
+import React, { useContext } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -16,52 +15,47 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import AdminPage from "./pages/AdminPage";
 import MyPage from "./pages/MyPage";
-
 import SEO from "./components/SEO";
+import AuthMessage from "./components/AuthMessage";
+import { AuthContext } from "./components/AuthProvider";
 
 const App = () => {
-  const { isAuthenticated, role } = useAuthStore();
+  const { user } = useContext(AuthContext);
 
   return (
     <Router>
-      <div>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <SEO
-                  title="MDGGU"
-                  description="다양한 기술 스택을 활용하여 마크다운 글을 최적화하는 MDGGU."
-                  keywords={["Markdown", "MDGGU"]}
-                />
-              </>
-            }
-          />
-        </Routes>
-      </div>
-      <Header />
+      <SEO
+        title="MDGGU"
+        description="마크다운 글을 최적화하는 MDGGU."
+        keywords={["Markdown", "MDGGU"]}
+      />
+      <Header /> <AuthMessage />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/mypage" element={<MyPage />} />
+        <Route
+          path="/mypage"
+          element={user ? <MyPage /> : <Navigate to="/login" />}
+        />
         <Route
           path="/documents"
-          element={
-            isAuthenticated ? <DocumentList /> : <Navigate to="/login" />
-          }
+          element={user ? <DocumentList /> : <Navigate to="/login" />}
         />
         <Route
           path="/documents/:id"
-          element={
-            isAuthenticated ? <DocumentDetails /> : <Navigate to="/login" />
-          }
+          element={user ? <DocumentDetails /> : <Navigate to="/login" />}
         />
         <Route path="/editor" element={<Editor />} />
         <Route
           path="/admin"
-          element={role === "ADMIN" ? <AdminPage /> : <Navigate to="/" />}
+          element={
+            user?.email === "admin@example.com" ? (
+              <AdminPage />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
       </Routes>
     </Router>
