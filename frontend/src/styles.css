@@ -4,23 +4,134 @@
 
 /* Base styles */
 body {
-  @apply m-0 font-sans antialiased subpixel-antialiased;
-}
-
-code {
-  @apply font-mono;
+  @apply m-0 font-sans antialiased subpixel-antialiased dark:bg-black dark:text-white;
 }
 
 /* Base container and layout styling */
 .container {
-  @apply mx-auto max-w-7xl;
-  padding: 0 1rem;
+  @apply mx-auto max-w-7xl px-4 py-2;
 }
 
 /* Components */
 @layer components {
+  h1 {
+    @apply text-3xl font-bold text-brand-blue;
+  }
+  h2 {
+    @apply text-xl font-bold my-3;
+  }
+  h3 {
+    @apply text-xl font-bold my-2;
+  }
+  h4,
+  h5,
+  h6 {
+    @apply text-lg font-semibold my-1;
+  }
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    @apply text-white;
+  }
+
+  select {
+    @apply bg-white text-black border border-gray-300 rounded shadow-sm p-2;
+  }
+  .dart select {
+    @apply bg-gray-800 text-white border-gray-600;
+  }
+
+  option {
+    @apply bg-white text-black;
+  }
+  .dark option {
+    @apply bg-gray-800 text-white;
+  }
+
+  /* 공통 버튼 스타일 */
+  .btn {
+    @apply text-white font-bold py-2 px-4 rounded transition-all text-sm flex items-center justify-center;
+  }
+  .btn-primary {
+    @apply bg-brand-blue hover:bg-brand-blue-dark;
+  }
+  .btn-secondary {
+    @apply bg-brand-yellow hover:bg-brand-yellow-dark;
+  }
+  .btn-danger {
+    @apply bg-brand-red hover:bg-brand-red-dark;
+  }
+
+  .dark .btn {
+    @apply bg-gray-700 hover:bg-gray-600;
+  }
+
+  /* 입력창 스타일 */
+  .input-box {
+    @apply border-2 border-brand-gray-dark rounded shadow-strong p-4 min-h-[25rem] overflow-auto resize-none;
+  }
+  .dark .input-box {
+    @apply bg-gray-800 text-white border-gray-600;
+  }
+
+  /* 미리보기 박스 스타일 */
+  .preview-box {
+    @apply border-2 border-brand-gray-dark rounded shadow-strong p-4 min-h-[25rem] overflow-auto;
+  }
+  .dark .preview-box {
+    @apply bg-gray-900 text-white border-gray-700;
+  }
+
+  /* 버튼 그룹 스타일 */
+  .btn-group {
+    @apply flex flex-wrap justify-between items-center gap-2;
+  }
+
+  /* 아이콘 버튼 스타일 (모바일 대응) */
+  .btn-icon {
+    @apply hidden md:flex;
+  }
+  .btn-text {
+    @apply md:hidden;
+  }
+
+  /* 긴 코드 블록 자동 줄바꿈 + 가로 스크롤 */
+  pre {
+    @apply bg-neutral-gray p-2 rounded overflow-x-auto;
+  }
+  .dark pre {
+    @apply bg-gray-800 text-white;
+  }
+
+  code {
+    @apply font-mono;
+  }
+  .dark code {
+    @apply bg-gray-700 text-yellow-300;
+  }
+
   .nav-link {
     @apply text-white hover:text-brand-yellow transition-colors duration-300;
+  }
+
+  /*  테이블 스타일 */
+  table {
+    @apply min-w-full divide-y divide-gray-300;
+  }
+  th {
+    @apply bg-gray-200 p-2 text-left font-semibold;
+  }
+  td {
+    @apply bg-white p-2;
+  }
+  .dark th {
+    @apply bg-gray-800 text-white;
+  }
+  .dark td {
+    @apply bg-gray-900 text-white;
   }
 }
 
@@ -50,21 +161,6 @@ code {
 
   /* Custom styles for markdown content */
   .prose {
-    h1 {
-      @apply text-3xl font-bold my-4;
-    }
-    h2 {
-      @apply text-2xl font-bold my-3;
-    }
-    h3 {
-      @apply text-xl font-bold my-2;
-    }
-    h4,
-    h5,
-    h6 {
-      @apply text-lg font-semibold my-1;
-    }
-
     p {
       @apply my-2;
     }
@@ -78,30 +174,23 @@ code {
     li {
       @apply my-1;
     }
+    .dark ul,
+    .dark ol {
+      @apply text-white;
+    }
 
     blockquote {
       @apply italic border-l-4 border-neutral-gray-dark pl-4 my-2;
     }
-
-    code {
-      @apply bg-neutral-gray-light rounded p-1 font-mono text-sm;
-    }
-    pre {
-      @apply bg-neutral-gray p-2 rounded overflow-x-auto;
-    }
-
-    table {
-      @apply min-w-full divide-y divide-neutral-gray;
-    }
-    th {
-      @apply bg-neutral-gray-light p-2 text-left font-semibold;
-    }
-    td {
-      @apply bg-white p-2;
+    .dark blockquote {
+      @apply border-gray-600 text-white;
     }
 
     a {
       @apply text-info-blue underline;
+    }
+    .dark a {
+      @apply text-blue-300;
     }
 
     img {
@@ -193,4 +282,10 @@ body {
   @apply border-4 border-gray-300 rounded-full w-6 h-6 m-auto;
   border-left-color: theme("colors.brand-blue.light");
   animation: spin 2s linear infinite reverse;
+}
+
+/* 다크 모드 배경 및 텍스트 */
+.dark {
+  background-color: #121212;
+  color: white;
 }
