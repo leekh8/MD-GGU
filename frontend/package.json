@@ -32,7 +32,7 @@
     "serve": "vite preview",
     "test": "vitest",
     "eject": "vite eject",
-    "postinstall": "node -v && npm -v"
+    "postinstall": "npm install -g npm@latest"
   },
   "eslintConfig": {
     "extends": [
