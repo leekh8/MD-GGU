@@ -21,6 +21,7 @@ import { AuthContext } from "./components/AuthProvider";
 
 const App = () => {
   const { user } = useContext(AuthContext);
+  const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
 
   return (
     <Router>
@@ -50,11 +51,7 @@ const App = () => {
         <Route
           path="/admin"
           element={
-            user?.email === "admin@example.com" ? (
-              <AdminPage />
-            ) : (
-              <Navigate to="/" />
-            )
+            user?.email === ADMIN_EMAIL ? <AdminPage /> : <Navigate to="/" />
           }
         />
       </Routes>

@@ -23,7 +23,14 @@ const LoginPage = () => {
 
     try {
       await auth.login(email, password);
-      navigate("/");
+
+      setTimeout(() => {
+        if (auth.user?.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }, 500);
     } catch (error) {
       console.error("LoginPage - Login error:", error);
       setError(t("incorrectEmailOrPassword"));

@@ -8,9 +8,11 @@ import {
 } from "firebase/auth";
 import "../styles.css";
 
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+
 // 초기 기본값 설정
 const defaultAuthContext = {
-  user: null,
+  user: undefined,
   register: () => {},
   login: () => {},
   logout: () => {},
@@ -28,7 +30,15 @@ export const AuthProvider = ({ children }) => {
   // Firebase 인증 상태 변화 감지 (자동 로그인/로그아웃 반영)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (currentUser) {
+        setUser((prevUser) => ({
+          ...currentUser,
+          role: currentUser.email === ADMIN_EMAIL ? "admin" : "user",
+        }));
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
       setLoading(false);
     });
 
@@ -79,7 +89,12 @@ export const AuthProvider = ({ children }) => {
         email,
         password
       );
-      setUser(userCredential.user);
+      const loggedInUser = userCredential.user;
+
+      setUser({
+        ...loggedInUser,
+        role: loggedInUser.email === ADMIN_EMAIL ? "admin" : "user",
+      });
       setAuthMessage({ status: "success", message: "loginSuccessful" });
     } catch (error) {
       console.error("AuthProvider - Login error:", error);
