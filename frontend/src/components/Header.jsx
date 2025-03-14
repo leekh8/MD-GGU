@@ -65,7 +65,7 @@ const Header = () => {
           </Link>
         </li>
         <li>
-          <button onClick={logout} className={linkClass}>
+          <button onClick={logout} className={`${linkClass} w-full `}>
             {t("logout")}
           </button>
         </li>
