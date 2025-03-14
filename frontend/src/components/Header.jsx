@@ -69,7 +69,7 @@ const Header = () => {
             {t("logout")}
           </button>
         </li>
-        {user?.role === "ADMIN" && (
+        {user?.role === "admin" && (
           <li>
             <Link
               to="/admin"
