@@ -18,9 +18,24 @@
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import numpy as np
+import pickle
+import os
 
-# 모델과 토크나이저 로드
+# 모델 로드
 model = load_model('nickname_generator.keras')
+
+# 토크나이저 로드 (모델 학습 시 함께 저장된 파일)
+_tokenizer_path = os.path.join(os.path.dirname(__file__), 'nickname_generator_tokenizer.pkl')
+if not os.path.exists(_tokenizer_path):
+    raise FileNotFoundError(
+        f"토크나이저 파일을 찾을 수 없습니다: {_tokenizer_path}\n"
+        "모델 학습 후 tokenizer를 pickle로 저장해야 합니다:\n"
+        "  import pickle\n"
+        "  with open('nickname_generator_tokenizer.pkl', 'wb') as f:\n"
+        "      pickle.dump(tokenizer, f)"
+    )
+with open(_tokenizer_path, 'rb') as f:
+    tokenizer = pickle.load(f)
 
 max_length = 10
 

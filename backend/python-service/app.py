@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from nickname_generator import generate_nickname
 import random
+import os
 
 app = Flask(__name__)
 
@@ -24,4 +25,5 @@ def generate_nickname_api():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    app.run(debug=debug)
