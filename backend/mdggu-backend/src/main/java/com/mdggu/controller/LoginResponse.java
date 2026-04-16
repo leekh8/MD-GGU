@@ -16,7 +16,7 @@ public class LoginResponse {
         return accessToken;
     }
 
-    public String getrefreshToken() {
+    public String getRefreshToken() {
         return refreshToken;
     }
 

@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청 허용
                 .requestMatchers("/api/v1/auth/**").permitAll() // 인증 관련 API는 모두 허용
-                .requestMatchers("/api/v1/documents/**").permitAll() // 문서 관련 API는 모두 허용 (임시)
+                .requestMatchers("/api/v1/documents/**").authenticated() // 문서 관련 API는 인증 필요
                 .requestMatchers("/health").hasRole("ADMIN")
                 .requestMatchers("/status").hasRole("ADMIN")
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
@@ -77,9 +77,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용된 origin 설정
-        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
-        configuration.setAllowedOrigins(Arrays.asList(pythonUrl));
+        configuration.setAllowedOrigins(Arrays.asList(frontendUrl, pythonUrl));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용된 HTTP 메서드 설정
         configuration.setAllowedHeaders(List.of("*")); // 허용된 헤더 설정
         configuration.setAllowCredentials(true); // 자격 증명 허용

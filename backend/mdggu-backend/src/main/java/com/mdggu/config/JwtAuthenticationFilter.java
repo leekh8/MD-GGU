@@ -37,7 +37,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = tokenProvider.resolveToken(request, "refreshToken"); // 토큰 가져오기
+        // Authorization 헤더에서 Bearer 토큰 추출, 없으면 accessToken 쿠키 fallback
+        String token = null;
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        } else {
+            token = tokenProvider.resolveToken(request, "accessToken");
+        }
         if (token != null && tokenProvider.validateToken(token)) { // 토큰 검증
             Authentication auth = tokenProvider.getAuthentication(token); // 인증 정보 가져오기
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
