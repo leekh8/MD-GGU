@@ -11,7 +11,7 @@ export default defineConfig({
     port: port,
     open: true,
     host: true,
-    allowedHosts: ["mdggu-front.onrender.com"],
+    allowedHosts: ["mdggu-front.onrender.com", "localhost", "127.0.0.1"],
     historyApiFallback: true, // SPA 라우팅을 위해 필요
     watch: {
       usePolling: true,

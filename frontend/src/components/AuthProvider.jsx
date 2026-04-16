@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+import { apiUpdateUser } from "../api";
 import "../styles.css";
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
@@ -16,6 +17,7 @@ const defaultAuthContext = {
   register: () => {},
   login: () => {},
   logout: () => {},
+  updateUser: () => {},
   authMessage: null,
   setAuthMessage: () => {},
 };
@@ -47,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   const generateNickname = async (seedText) => {
     try {
-      const apiUrl = process.env.VITE_PYTHON_API_URL;
+      const apiUrl = import.meta.env.VITE_PYTHON_API_URL;
       const response = await fetch(
         `${apiUrl}/generate_nickname?method=markov_chain`
       );
@@ -103,6 +105,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = async (updatedUser) => {
+    try {
+      const data = await apiUpdateUser(updatedUser);
+      setUser((prevUser) => ({ ...prevUser, ...data }));
+      setAuthMessage({ status: "success", message: "profileUpdated" });
+      return data;
+    } catch (error) {
+      console.error("AuthProvider - Update user error:", error);
+      setAuthMessage({ status: "error", message: error.message || "unexpectedError" });
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -126,7 +141,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, register, login, logout, authMessage, setAuthMessage }}
+      value={{ user, register, login, logout, updateUser, authMessage, setAuthMessage }}
     >
       {children}
     </AuthContext.Provider>

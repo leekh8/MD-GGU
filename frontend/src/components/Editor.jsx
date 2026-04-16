@@ -34,6 +34,7 @@ const Editor = () => {
   const handleChange = (e) => {
     setContent(e.target.value);
     localStorage.setItem("markdownContent", e.target.value); // 자동 저장
+    saveHistory(e.target.value); // undo 히스토리 저장
   };
 
   const exportToPDF = () => {

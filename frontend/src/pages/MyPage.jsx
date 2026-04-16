@@ -58,7 +58,7 @@ const MyPage = () => {
       setError(t("usernameLengthError"));
       return;
     }
-    if (!username.matches("^[a-zA-Z0-9._-]+$")) {
+    if (!/^[a-zA-Z0-9._-]+$/.test(username)) {
       setError(t("usernameCharacterError"));
       return;
     }
