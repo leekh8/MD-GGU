@@ -1,9 +1,8 @@
-// ReactDOM을 통해 앱 마운트
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "./components/AuthProvider";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 import "./styles.css";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
@@ -12,17 +11,12 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <I18nextProvider i18n={i18n}>
-        <App />
-      </I18nextProvider>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <I18nextProvider i18n={i18n}>
+          <App />
+        </I18nextProvider>
+      </AuthProvider>
+    </HelmetProvider>
   </React.StrictMode>
 );
-
-// 성능 측정을 위한 reportWebVitals 함수 활용
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-console.log("src/index.jsx");
-reportWebVitals(console.log);
