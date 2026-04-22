@@ -71,5 +71,21 @@
   "saveToDocument": "문서로 저장",
   "documentSaved": "문서가 저장되었습니다.",
   "documentSaveFailed": "문서 저장에 실패했습니다.",
-  "titleRequired": "제목을 입력해주세요."
+  "titleRequired": "제목을 입력해주세요.",
+  "openFile": "파일 열기",
+  "downloadMd": ".md 다운로드",
+  "exportPdf": "PDF 저장",
+  "editorPlaceholder": "마크다운을 입력하세요...",
+  "words": "단어",
+  "chars": "글자",
+  "optimizeError": "최적화 중 오류가 발생했습니다.",
+  "shortcutGuide": "단축키 가이드",
+  "shortcut.bold": "굵게",
+  "shortcut.italic": "이탤릭",
+  "shortcut.link": "링크 삽입",
+  "shortcut.heading": "제목",
+  "shortcut.codeBlock": "코드 블록",
+  "shortcut.save": "문서로 저장",
+  "shortcut.undo": "실행 취소",
+  "shortcut.openGuide": "단축키 가이드 열기"
 }

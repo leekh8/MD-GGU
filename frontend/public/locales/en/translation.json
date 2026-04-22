@@ -71,5 +71,21 @@
   "saveToDocument": "Save as Document",
   "documentSaved": "Document saved.",
   "documentSaveFailed": "Failed to save document.",
-  "titleRequired": "Please enter a title."
+  "titleRequired": "Please enter a title.",
+  "openFile": "Open File",
+  "downloadMd": "Download .md",
+  "exportPdf": "Export PDF",
+  "editorPlaceholder": "Type your markdown here...",
+  "words": "words",
+  "chars": "chars",
+  "optimizeError": "An error occurred during optimization.",
+  "shortcutGuide": "Shortcut Guide",
+  "shortcut.bold": "Bold",
+  "shortcut.italic": "Italic",
+  "shortcut.link": "Insert link",
+  "shortcut.heading": "Heading",
+  "shortcut.codeBlock": "Code block",
+  "shortcut.save": "Save as document",
+  "shortcut.undo": "Undo",
+  "shortcut.openGuide": "Open shortcut guide"
 }
