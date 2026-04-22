@@ -40,5 +40,11 @@
   "serverStatus": "서버 상태",
   "adminPage": "관리자 페이지",
   "lightMode": "라이트 모드",
-  "darkMode": "다크 모드"
+  "darkMode": "다크 모드",
+  "optimize": "최적화",
+  "optimizing": "최적화 중...",
+  "optimize result": "최적화 결과",
+  "summary": "요약",
+  "suggested emojis": "추천 이모지",
+  "references": "참고링크"
 }

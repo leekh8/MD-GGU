@@ -9,9 +9,11 @@ import {
   CheckIcon,
   QuestionMarkCircleIcon,
   XMarkIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { HelmetProvider, Helmet } from "react-helmet-async";
+import { optimizeMarkdown } from "../api";
 
 const Editor = () => {
   const { t } = useTranslation();
@@ -24,6 +26,8 @@ const Editor = () => {
   const modalRef = useRef(null);
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const charCount = content.length;
+  const [optimizeResult, setOptimizeResult] = useState(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
 
   // 자동 저장 기능
   useEffect(() => {
@@ -228,6 +232,21 @@ const Editor = () => {
   // 모달 열기/닫기 토글 함수
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+  // 마크다운 최적화
+  const handleOptimize = async () => {
+    if (!content.trim()) return;
+    setIsOptimizing(true);
+    setOptimizeResult(null);
+    try {
+      const result = await optimizeMarkdown(content);
+      setOptimizeResult(result);
+    } catch (err) {
+      setOptimizeResult({ error: "최적화 중 오류가 발생했습니다." });
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
+
   useEffect(() => {
     // ESC 키 감지하여 모달 닫기
     const handleEscKey = (e) => {
@@ -359,8 +378,18 @@ const Editor = () => {
           </label>
           <span className="text-gray-500 ">{fileName}</span>
         </div>
-        {/* 우측: 다운로드 & PDF 저장 */}{" "}
+        {/* 우측: AI 최적화, 다운로드 & PDF 저장 */}{" "}
         <div className="flex gap-2">
+          <button
+            onClick={handleOptimize}
+            disabled={isOptimizing || !content.trim()}
+            className="btn btn-primary w-40"
+          >
+            <SparklesIcon className="h-5 w-5" />
+            <span className="ml-2 hidden md:inline">
+              {isOptimizing ? t("optimizing") : t("optimize")}
+            </span>
+          </button>
           <button onClick={handleDownload} className="btn btn-secondary w-40">
             📥 .md 다운로드
           </button>
@@ -400,6 +429,72 @@ const Editor = () => {
           </ReactMarkdown>
         </div>
       </div>
+
+      {/* ✨ 최적화 결과 패널 */}
+      {optimizeResult && (
+        <div className="mt-6 p-4 border rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+              <SparklesIcon className="h-5 w-5 text-yellow-500" />
+              {t("optimize result")}
+            </h3>
+            <button
+              onClick={() => setOptimizeResult(null)}
+              className="p-1 rounded dark:text-gray-300"
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+          </div>
+
+          {optimizeResult.error ? (
+            <p className="text-red-500">{optimizeResult.error}</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {/* 요약 */}
+              {optimizeResult.summary && (
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    📋 {t("summary")}
+                  </p>
+                  <p className="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">
+                    {optimizeResult.summary}
+                  </p>
+                </div>
+              )}
+
+              {/* 이모지 추천 */}
+              {optimizeResult.emojis?.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    😊 {t("suggested emojis")}
+                  </p>
+                  <div className="flex gap-2 text-2xl">
+                    {optimizeResult.emojis.map((emoji, i) => (
+                      <span key={i}>{emoji}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 참고링크 */}
+              {optimizeResult.refs?.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    🔗 {t("references")}
+                  </p>
+                  <ul className="text-sm text-gray-700 dark:text-gray-300 list-none space-y-1">
+                    {optimizeResult.refs.map((ref, i) => (
+                      <li key={i} className="font-mono">
+                        {ref}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

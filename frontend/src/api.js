@@ -137,3 +137,16 @@ export function deleteDocument(id) {
 export function getServerStatus() {
   return apiClient.get(ENDPOINTS.STATUS).then((res) => res.data);
 }
+
+// 마크다운 최적화
+export function optimizeMarkdown(content) {
+  return apiClient
+    .post("/api/v1/optimize", { content })
+    .then((res) => res.data.data); // { summary, emojis, refs }
+}
+
+export function optimizeAndSaveDocument(documentId) {
+  return apiClient
+    .post(`/api/v1/optimize/${documentId}`)
+    .then((res) => res.data.data);
+}

@@ -40,5 +40,11 @@
   "serverStatus": "Server Status",
   "adminPage": "Admin Page",
   "lightMode": "Light Mode",
-  "darkMode": "Dark Mode"
+  "darkMode": "Dark Mode",
+  "optimize": "Optimize",
+  "optimizing": "Optimizing...",
+  "optimize result": "Optimization Result",
+  "summary": "Summary",
+  "suggested emojis": "Suggested Emojis",
+  "references": "References"
 }
