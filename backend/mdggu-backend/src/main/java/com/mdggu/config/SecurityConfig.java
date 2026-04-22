@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청 허용
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger UI 허용
                 .requestMatchers("/api/v1/auth/**").permitAll() // 인증 관련 API는 모두 허용
                 .requestMatchers("/api/v1/documents/**").authenticated() // 문서 관련 API는 인증 필요
                 // hasRole()은 "ROLE_" prefix를 자동 추가하므로, UserRole enum 값("ADMIN")과 맞추려면 hasAuthority() 사용

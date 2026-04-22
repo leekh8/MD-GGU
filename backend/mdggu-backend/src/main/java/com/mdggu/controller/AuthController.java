@@ -23,11 +23,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Tag(name = "Auth", description = "회원가입 · 로그인 · 토큰 갱신 · 내 정보 관리")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -58,7 +61,7 @@ public class AuthController {
         return matcher.matches();
     }
 
-    // Access Token 갱신 API
+    @Operation(summary = "Access Token 갱신", description = "HttpOnly 쿠키의 refreshToken으로 새 accessToken 발급")
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         log.info("Refresh token request received");
@@ -90,6 +93,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "회원가입", description = "이메일·비밀번호로 신규 계정 생성")
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> registerUser(@RequestBody User user) {
         // 이메일 형식 검증
@@ -121,6 +125,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "로그인", description = "성공 시 accessToken(body) + refreshToken(HttpOnly 쿠키) 발급")
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user, HttpServletResponse response) { // HttpServletResponse 추가
         try {
@@ -183,6 +188,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "로그아웃", description = "refreshToken 쿠키 만료 처리")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logoutUser(HttpServletResponse response) { // HttpServletResponse 추가
         // 로그아웃 로직
