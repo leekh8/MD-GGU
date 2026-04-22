@@ -47,6 +47,8 @@
   "summary": "Summary",
   "suggested emojis": "Suggested Emojis",
   "references": "References",
+  "fieldRequired": "This field is required.",
+  "invalidEmail": "Please enter a valid email address.",
   "noAccount": "Don't have an account?",
   "haveAccount": "Already have an account?",
   "passwordTooShort": "Password must be at least 8 characters.",

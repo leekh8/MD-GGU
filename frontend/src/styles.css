@@ -74,6 +74,12 @@ body {
     @apply bg-gray-700 hover:bg-gray-600;
   }
 
+  /* 페이지 카드 래퍼 */
+  .page-card {
+    @apply w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-soft
+      p-8 border border-gray-100 dark:border-gray-800;
+  }
+
   /* 공통 폼 인풋 스타일 */
   .form-input {
     @apply mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm

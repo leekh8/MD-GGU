@@ -1,224 +1,182 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/solid";
+import { MoonIcon, SunIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+
+const NAV_LINK_BASE =
+  "text-sm font-medium transition-colors duration-200 hover:text-brand-yellow";
+const NAV_LINK_ACTIVE = "text-brand-yellow";
 
 const Header = () => {
-  const { t } = useTranslation();
+  const { t }                   = useTranslation();
   const { user, logout, loading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+  const menuRef                 = useRef(null);
   const [isDarkMode, setIsDarkMode] = useState(
     localStorage.getItem("darkMode") === "true"
   );
 
+  // 외부 클릭 시 모바일 메뉴 닫기
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenuOpen(false);
       }
     };
-
     if (menuOpen) {
-      setTimeout(() => {
-        document.addEventListener("click", handleClickOutside);
-      }, 100);
+      setTimeout(() => document.addEventListener("click", handler), 100);
     }
-
-    return () => document.removeEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handler);
   }, [menuOpen]);
 
+  // 다크모드 적용
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.classList.toggle("dark", isDarkMode);
     localStorage.setItem("darkMode", isDarkMode);
   }, [isDarkMode]);
 
-  const menuItems = (isMobile) => {
-    const linkClass = isMobile
-      ? "block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
-      : "hover:text-brand-yellow transition-colors duration-300";
+  // 공통 nav 항목
+  const navItems = user
+    ? [
+        { to: "/documents", label: t("documents") },
+        { to: "/editor",    label: t("editor") },
+        { to: "/mypage",    label: t("myPage") },
+        ...(user.role === "ADMIN" ? [{ to: "/admin", label: t("adminPage") }] : []),
+      ]
+    : [
+        { to: "/editor", label: t("editor") },
+        { to: "/login",  label: t("login") },
+        { to: "/signup", label: t("signup") },
+      ];
 
-    return user ? (
-      <>
-        <li>
-          <Link
-            to="/documents"
-            onClick={() => isMobile && setMenuOpen(false)}
-            className={linkClass}
-          >
-            {t("documents")}
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/mypage"
-            onClick={() => isMobile && setMenuOpen(false)}
-            className={linkClass}
-          >
-            {t("myPage")}
-          </Link>
-        </li>
-        <li>
-          <button onClick={logout} className={`${linkClass} w-full `}>
-            {t("logout")}
-          </button>
-        </li>
-        {user?.role === "admin" && (
-          <li>
-            <Link
-              to="/admin"
-              onClick={() => isMobile && setMenuOpen(false)}
-              className={linkClass}
-            >
-              {t("adminPage")}
-            </Link>
-          </li>
-        )}
-      </>
-    ) : (
-      <>
-        <li>
-          <Link
-            to="/login"
-            onClick={() => isMobile && setMenuOpen(false)}
-            className={linkClass}
-          >
-            {t("login")}
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/signup"
-            onClick={() => isMobile && setMenuOpen(false)}
-            className={linkClass}
-          >
-            {t("signup")}
-          </Link>
-        </li>
-      </>
-    );
-  };
-
-  if (loading) return <div>{t("loading")}</div>;
+  if (loading) return null;
 
   return (
-    <header className="bg-brand-blue text-white py-3 dark:bg-gray-900 dark:text-white">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-lg md:text-2xl font-bold font-sans">
+    <header className="bg-brand-blue dark:bg-gray-900 border-b border-brand-blue-dark dark:border-gray-800 sticky top-0 z-40">
+      <div className="container mx-auto flex items-center justify-between h-12 px-4">
+        {/* 로고 */}
+        <Link
+          to="/"
+          className="text-white font-bold text-lg tracking-tight hover:text-brand-yellow transition-colors"
+        >
           {t("mdggu")}
         </Link>
 
-        {/* 데스크톱 네비게이션 */}
-        <div className="hidden md:flex items-center space-x-6">
-          <nav>
-            <ul className="flex items-center space-x-4">
-              <li>
-                <Link
-                  to="/"
-                  className="hover:text-brand-yellow transition-colors duration-300"
-                >
-                  {t("home")}
-                </Link>
-              </li>
-              {menuItems(false)}
-              <li>
-                <Link
-                  to="/editor"
-                  className="hover:text-brand-yellow transition-colors duration-300"
-                >
-                  {t("editor")}
-                </Link>
-              </li>
-              <li>
-                <LanguageSwitcher />
-              </li>
-            </ul>
-          </nav>
-
-          {/* 다크 모드 토글 버튼 (데스크톱) */}
-          <button
-            onClick={() => setIsDarkMode((prev) => !prev)}
-            className="p-2 rounded-full transition-opacity opacity-70 hover:opacity-100 focus:outline-none flex items-center"
-            aria-label="Toggle Dark Mode"
+        {/* 데스크톱 nav */}
+        <nav className="hidden md:flex items-center gap-5">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `${NAV_LINK_BASE} text-white ${isActive ? NAV_LINK_ACTIVE : ""}`
+            }
           >
-            {isDarkMode ? (
-              <SunIcon className="w-6 h-6 text-yellow-400" />
-            ) : (
-              <MoonIcon className="w-6 h-6 text-gray-400" />
-            )}
-          </button>
-        </div>
+            {t("home")}
+          </NavLink>
 
-        {/* 모바일 네비게이션 */}
-        <div className="md:hidden relative" ref={menuRef}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setMenuOpen((prev) => !prev);
-            }}
-            className="text-white focus:outline-none"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `${NAV_LINK_BASE} text-white ${isActive ? NAV_LINK_ACTIVE : ""}`
+              }
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
+              {item.label}
+            </NavLink>
+          ))}
+
+          {user && (
+            <button
+              onClick={logout}
+              className={`${NAV_LINK_BASE} text-white`}
+            >
+              {t("logout")}
+            </button>
+          )}
+
+          {/* 구분선 */}
+          <div className="h-4 w-px bg-white/20" />
+
+          {/* 언어 전환 */}
+          <LanguageSwitcher />
+
+          {/* 다크모드 토글 */}
+          <button
+            onClick={() => setIsDarkMode((v) => !v)}
+            aria-label="Toggle dark mode"
+            className="flex items-center text-white/70 hover:text-white transition-colors"
+          >
+            {isDarkMode
+              ? <SunIcon  className="w-4.5 h-4.5" />
+              : <MoonIcon className="w-4.5 h-4.5" />}
           </button>
-          {menuOpen && (
-            <ul className="absolute right-0 mt-2 py-2 w-48 bg-white text-black rounded-lg shadow-lg text-center dark:bg-gray-800 dark:text-white">
-              <li>
+        </nav>
+
+        {/* 모바일: 다크모드 + 햄버거 */}
+        <div className="md:hidden flex items-center gap-2">
+          <button
+            onClick={() => setIsDarkMode((v) => !v)}
+            aria-label="Toggle dark mode"
+            className="p-1.5 text-white/70 hover:text-white transition-colors"
+          >
+            {isDarkMode ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
+          </button>
+
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v); }}
+              aria-label="Toggle menu"
+              className="p-1.5 text-white hover:text-brand-yellow transition-colors"
+            >
+              {menuOpen
+                ? <XMarkIcon className="w-5 h-5" />
+                : <Bars3Icon className="w-5 h-5" />}
+            </button>
+
+            {menuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-44 bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-100 dark:border-gray-700 overflow-hidden">
+                {/* Home */}
                 <Link
                   to="/"
                   onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2 text-sm transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"
+                  className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   {t("home")}
                 </Link>
-              </li>
-              {menuItems(true)}
-              <li>
-                <Link
-                  to="/editor"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2 text-sm transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600"
-                >
-                  {t("editor")}
-                </Link>
-              </li>
-              <li>
-                <LanguageSwitcher />
-              </li>
-              {/* 다크 모드 토글 버튼 (모바일) */}
-              <li className="px-4 py-2 text-sm flex justify-center">
-                <button
-                  onClick={() => setIsDarkMode((prev) => !prev)}
-                  className="flex items-center space-x-2 transition-opacity opacity-70 hover:opacity-100 active:opacity-100"
-                  aria-label="Toggle Dark Mode"
-                >
-                  {isDarkMode ? (
-                    <SunIcon className="w-5 h-5 text-yellow-400" />
-                  ) : (
-                    <MoonIcon className="w-5 h-5 text-gray-400" />
-                  )}
-                  <span>{isDarkMode ? t("lightMode") : t("darkMode")}</span>
-                </button>
-              </li>
-            </ul>
-          )}
+
+                {navItems.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+
+                {user && (
+                  <button
+                    onClick={() => { logout(); setMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    {t("logout")}
+                  </button>
+                )}
+
+                {/* 구분선 */}
+                <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
+
+                {/* 언어 선택 */}
+                <div className="px-4 py-2.5">
+                  <LanguageSwitcher mobile />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
