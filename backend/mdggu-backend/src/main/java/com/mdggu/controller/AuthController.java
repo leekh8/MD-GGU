@@ -6,7 +6,6 @@ import com.mdggu.model.User;
 import com.mdggu.service.CustomUserDetailsService;
 import com.mdggu.service.UserService;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,7 @@ public class AuthController {
 
         // Refresh Token 검증
         if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
-            log.info("Valid refresh token found: {}", refreshToken);
+            log.info("Valid refresh token, issuing new access token");
 
             // 새로운 Access Token, CSRF Token 생성
             Authentication auth = tokenProvider.getAuthentication(refreshToken);
@@ -253,17 +252,9 @@ public class AuthController {
         }
     }
 
-    // CSRF Token 검증
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex, HttpServletRequest request) {
-        // CSRF Token 검증
-        if (ex instanceof AuthenticationException) { // AuthenticationException 사용
-            String csrfTokenHeader = request.getHeader("X-CSRF-TOKEN");
-            String csrfTokenCookie = tokenProvider.resolveToken(request, "csrfToken");
-            if (csrfTokenHeader == null || csrfTokenCookie == null || !csrfTokenHeader.equals(csrfTokenCookie)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse<>(false, "Invalid CSRF token"));
-            }
-        }
+    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+        log.error("Unhandled exception in AuthController", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>(false, "An unexpected error occurred."));
     }

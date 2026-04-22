@@ -54,7 +54,9 @@ public class SecurityConfig {
         http
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-                .csrf().disable() // CSRF 비활성화 (CSRF Token을 사용하므로 Spring Security의 CSRF 보호 기능 비활성화)
+                // CSRF 비활성화: Stateless JWT Bearer 토큰 방식은 세션 쿠키 기반 CSRF 공격에 해당하지 않음.
+                // 단, refreshToken HttpOnly 쿠키 사용으로 인한 위험은 SameSite=Strict 설정으로 완화.
+                .csrf().disable()
                 .httpBasic().disable() // HTTP Basic 인증 비활성화
                 .formLogin().disable() // 폼 로그인 비활성화
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안 함
@@ -63,9 +65,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청 허용
                 .requestMatchers("/api/v1/auth/**").permitAll() // 인증 관련 API는 모두 허용
                 .requestMatchers("/api/v1/documents/**").authenticated() // 문서 관련 API는 인증 필요
-                .requestMatchers("/health").hasRole("ADMIN")
-                .requestMatchers("/status").hasRole("ADMIN")
-                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                // hasRole()은 "ROLE_" prefix를 자동 추가하므로, UserRole enum 값("ADMIN")과 맞추려면 hasAuthority() 사용
+                .requestMatchers("/health").hasAuthority("ADMIN")
+                .requestMatchers("/status").hasAuthority("ADMIN")
+                .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터 추가

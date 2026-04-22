@@ -104,7 +104,11 @@ public class UserService {
 
         currentUser.setEmail(newEmail);
         currentUser.setUsername(newUsername);
-        currentUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        // 비밀번호는 값이 있을 때만 변경 (빈 값 전달 시 기존 비밀번호 유지)
+        String newPassword = updatedUser.getPassword();
+        if (newPassword != null && !newPassword.isBlank()) {
+            currentUser.setPassword(passwordEncoder.encode(newPassword));
+        }
         userRepository.save(currentUser);
         log.info("User info updated successfully for email: {}", updatedUser.getEmail());
     }

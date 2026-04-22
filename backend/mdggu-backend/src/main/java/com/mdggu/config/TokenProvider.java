@@ -38,13 +38,13 @@ public class TokenProvider {
 
     public String generateAccessToken(UserDetails userDetails) {
         String accessToken = generateToken(userDetails, accessTokenExpiration);
-        log.info("Generated access token: {}", accessToken); // Access Token 생성 로그 추가
+        log.debug("Access token generated for user: {}", userDetails.getUsername());
         return accessToken;
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
         String refreshToken = generateToken(userDetails, refreshTokenExpiration);
-        log.info("Generated refresh token: {}", refreshToken); // Refresh Token 생성 로그 추가
+        log.debug("Refresh token generated for user: {}", userDetails.getUsername());
         return refreshToken;
     }
 
