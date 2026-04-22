@@ -1,19 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { auth } from "../config/firebaseConfig";
 import {
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-import { apiUpdateUser } from "../api";
+  login as apiLogin,
+  register as apiRegister,
+  logout as apiLogout,
+  getUser,
+  apiUpdateUser,
+} from "../api";
 import "../styles.css";
 
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
-
-// 초기 기본값 설정
 const defaultAuthContext = {
-  user: undefined,
+  user: null,
+  loading: true,
   register: () => {},
   login: () => {},
   logout: () => {},
@@ -26,93 +23,53 @@ export const AuthContext = createContext(defaultAuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [authMessage, setAuthMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authMessage, setAuthMessage] = useState(null);
 
-  // Firebase 인증 상태 변화 감지 (자동 로그인/로그아웃 반영)
+  // 앱 시작 시 localStorage 토큰으로 세션 복원
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser((prevUser) => ({
-          ...currentUser,
-          role: currentUser.email === ADMIN_EMAIL ? "admin" : "user",
-        }));
-      } else {
-        setUser(null);
+    const restoreSession = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch {
+        // 토큰 만료 or 서버 오류 → 로그아웃 상태로
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("csrfToken");
+      } finally {
         setLoading(false);
       }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    };
+    restoreSession();
   }, []);
-
-  const generateNickname = async (seedText) => {
-    try {
-      const apiUrl = import.meta.env.VITE_PYTHON_API_URL;
-      const response = await fetch(
-        `${apiUrl}/generate_nickname?method=markov_chain`
-      );
-
-      const data = await response.json();
-      if (data.nickname) {
-        return data.nickname;
-      } else {
-        throw new Error(data.error || "Nickname generation failed");
-      }
-    } catch (error) {
-      console.error("Failed to generate nickname:", error);
-      return "default_nickname"; // 기본 닉네임
-    }
-  };
-
-  const register = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const seedText = email.split("@")[0]; // 이메일 앞부분을 seed로 사용
-      const nickname = await generateNickname(seedText); // Flask API 호출로 닉네임 생성
-      setUser(userCredential.user);
-      setAuthMessage({ status: "success", message: "registrationSuccessful" });
-    } catch (error) {
-      console.error("AuthProvider - Register error:", error);
-      setAuthMessage({ status: "error", message: error.message });
-      throw error;
-    }
-  };
 
   const login = async (email, password) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const loggedInUser = userCredential.user;
+      const { accessToken, csrfToken } = await apiLogin(email, password);
+      localStorage.setItem("accessToken", accessToken);
+      if (csrfToken) localStorage.setItem("csrfToken", csrfToken);
 
-      setUser({
-        ...loggedInUser,
-        role: loggedInUser.email === ADMIN_EMAIL ? "admin" : "user",
-      });
+      const userData = await getUser();
+      setUser(userData);
       setAuthMessage({ status: "success", message: "loginSuccessful" });
     } catch (error) {
-      console.error("AuthProvider - Login error:", error);
       setAuthMessage({ status: "error", message: "incorrectEmailOrPassword" });
       throw error;
     }
   };
 
-  const updateUser = async (updatedUser) => {
+  const register = async (email, password) => {
     try {
-      const data = await apiUpdateUser(updatedUser);
-      setUser((prevUser) => ({ ...prevUser, ...data }));
-      setAuthMessage({ status: "success", message: "profileUpdated" });
-      return data;
+      await apiRegister(email, password);
+      // 가입 후 자동 로그인
+      await login(email, password);
+      setAuthMessage({ status: "success", message: "registrationSuccessful" });
     } catch (error) {
-      console.error("AuthProvider - Update user error:", error);
       setAuthMessage({ status: "error", message: error.message || "unexpectedError" });
       throw error;
     }
@@ -120,12 +77,25 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      await apiLogout();
+    } catch {
+      // 서버 오류여도 클라이언트 세션은 무조건 초기화
+    } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("csrfToken");
       setUser(null);
       setAuthMessage({ status: "success", message: "logoutSuccessful" });
+    }
+  };
+
+  const updateUser = async (updatedUser) => {
+    try {
+      const data = await apiUpdateUser(updatedUser);
+      setUser((prev) => ({ ...prev, ...data }));
+      setAuthMessage({ status: "success", message: "profileUpdated" });
+      return data;
     } catch (error) {
-      console.error("AuthProvider - Logout error:", error);
-      setAuthMessage({ status: "error", message: "unexpectedError" });
+      setAuthMessage({ status: "error", message: error.message || "unexpectedError" });
       throw error;
     }
   };

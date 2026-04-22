@@ -21,8 +21,6 @@ import { AuthContext } from "./components/AuthProvider";
 
 const App = () => {
   const { user } = useContext(AuthContext);
-  const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
-
   return (
     <Router>
       <SEO
@@ -51,7 +49,7 @@ const App = () => {
         <Route
           path="/admin"
           element={
-            user?.email === ADMIN_EMAIL ? <AdminPage /> : <Navigate to="/" />
+            user?.role === "ADMIN" ? <AdminPage /> : <Navigate to="/" />
           }
         />
       </Routes>

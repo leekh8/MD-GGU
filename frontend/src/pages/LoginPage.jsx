@@ -25,7 +25,7 @@ const LoginPage = () => {
       await auth.login(email, password);
 
       setTimeout(() => {
-        if (auth.user?.role === "admin") {
+        if (auth.user?.role === "ADMIN") {
           navigate("/admin");
         } else {
           navigate("/");
