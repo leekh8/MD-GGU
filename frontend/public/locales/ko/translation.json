@@ -89,5 +89,10 @@
   "shortcut.codeBlock": "코드 블록",
   "shortcut.save": "문서로 저장",
   "shortcut.undo": "실행 취소",
-  "shortcut.openGuide": "단축키 가이드 열기"
+  "shortcut.openGuide": "단축키 가이드 열기",
+  "openInEditor": "에디터로 열기",
+  "updateDocument": "문서 업데이트",
+  "sortNewest": "최신순",
+  "sortOldest": "오래된순",
+  "sortName": "이름순"
 }

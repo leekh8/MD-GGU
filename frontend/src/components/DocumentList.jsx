@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { getAllDocuments } from "../api";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
-import { DocumentTextIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon, ArrowPathIcon, BarsArrowDownIcon, BarsArrowUpIcon } from "@heroicons/react/24/outline";
 
 const SkeletonCard = () => (
   <div className="card">
@@ -17,6 +17,7 @@ function DocumentList() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState("");
+  const [sort, setSort]           = useState("newest"); // "newest" | "oldest" | "name"
 
   const fetchDocuments = useCallback(async () => {
     setLoading(true);
@@ -35,19 +36,50 @@ function DocumentList() {
     fetchDocuments();
   }, [fetchDocuments]);
 
+  const sortedDocuments = useMemo(() => {
+    const copy = [...documents];
+    if (sort === "newest") return copy.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    if (sort === "oldest") return copy.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
+    if (sort === "name")   return copy.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    return copy;
+  }, [documents, sort]);
+
   return (
     <>
       <Helmet>
         <title>{t("mdggu")} ・ {t("documents")}</title>
       </Helmet>
       <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-wrap justify-between items-center mb-6 gap-3">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
             {t("documents")}
           </h1>
-          <Link to="/editor" className="btn btn-primary px-4 py-2 text-sm">
-            + {t("newDocument")}
-          </Link>
+          <div className="flex items-center gap-2">
+            {/* 정렬 선택 */}
+            <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden text-sm">
+              {[
+                { key: "newest", label: t("sortNewest"), icon: <BarsArrowDownIcon className="h-3.5 w-3.5" /> },
+                { key: "oldest", label: t("sortOldest"), icon: <BarsArrowUpIcon   className="h-3.5 w-3.5" /> },
+                { key: "name",   label: t("sortName"),   icon: null },
+              ].map(({ key, label, icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setSort(key)}
+                  className={`flex items-center gap-1 px-3 py-1.5 transition-colors ${
+                    sort === key
+                      ? "bg-brand-blue text-white"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {icon}
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+            <Link to="/editor" className="btn btn-primary px-4 py-2 text-sm">
+              + {t("newDocument")}
+            </Link>
+          </div>
         </div>
 
         {/* 에러 상태 */}
@@ -74,7 +106,7 @@ function DocumentList() {
         )}
 
         {/* 빈 상태 */}
-        {!loading && !error && documents.length === 0 && (
+        {!loading && !error && sortedDocuments.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <DocumentTextIcon className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
             <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
@@ -90,9 +122,9 @@ function DocumentList() {
         )}
 
         {/* 문서 목록 */}
-        {!loading && !error && documents.length > 0 && (
+        {!loading && !error && sortedDocuments.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {documents.map((doc) => (
+            {sortedDocuments.map((doc) => (
               <Link
                 key={doc.id}
                 to={`/documents/${doc.id}`}

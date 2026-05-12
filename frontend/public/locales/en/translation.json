@@ -89,5 +89,10 @@
   "shortcut.codeBlock": "Code block",
   "shortcut.save": "Save as document",
   "shortcut.undo": "Undo",
-  "shortcut.openGuide": "Open shortcut guide"
+  "shortcut.openGuide": "Open shortcut guide",
+  "openInEditor": "Open in Editor",
+  "updateDocument": "Update Document",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortName": "Name"
 }

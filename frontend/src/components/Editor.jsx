@@ -17,7 +17,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
-import { optimizeMarkdown, createDocument } from "../api";
+import { optimizeMarkdown, createDocument, updateDocument } from "../api";
 import { useAuth } from "./AuthProvider";
 
 // ── 툴바 버튼 정의 ─────────────────────────────────────────────────────────────
@@ -97,8 +97,21 @@ const Editor = () => {
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const charCount = content.length;
 
-  // 자동 저장
+  // 문서 상세에서 "에디터로 열기" 진입 시 해당 문서 로드
+  const [editingDocId, setEditingDocId] = useState(null);
+
   useEffect(() => {
+    const fromDoc = localStorage.getItem("editorDocument");
+    if (fromDoc) {
+      try {
+        const { id, title, content: docContent } = JSON.parse(fromDoc);
+        setContent(docContent || "");
+        setDocTitle(title || "");
+        setEditingDocId(id);
+        localStorage.removeItem("editorDocument");
+        return; // 자동 저장 덮어쓰기 방지
+      } catch { /* 파싱 실패 시 무시 */ }
+    }
     const saved = localStorage.getItem("markdownContent");
     if (saved) setContent(saved);
   }, []);
@@ -274,11 +287,21 @@ const Editor = () => {
     if (!docTitle.trim()) { setSaveMessage({ type: "error", text: t("titleRequired") }); return; }
     setIsSaving(true);
     try {
-      const created = await createDocument({ title: docTitle.trim(), content });
+      let savedId;
+      if (editingDocId) {
+        // 기존 문서 업데이트
+        await updateDocument(editingDocId, { title: docTitle.trim(), content });
+        savedId = editingDocId;
+      } else {
+        // 새 문서 생성
+        const created = await createDocument({ title: docTitle.trim(), content });
+        savedId = created.data?.id;
+      }
       setSaveMessage({ type: "success", text: t("documentSaved") });
       setTimeout(() => {
         setIsSaveModalOpen(false);
-        navigate(`/documents/${created.data?.id || ""}`);
+        setEditingDocId(null);
+        navigate(`/documents/${savedId || ""}`);
       }, 800);
     } catch {
       setSaveMessage({ type: "error", text: t("documentSaveFailed") });
@@ -524,7 +547,9 @@ const Editor = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div ref={saveModalRef} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-white">{t("saveToDocument")}</h2>
+              <h2 className="text-lg font-bold text-gray-800 dark:text-white">
+                {editingDocId ? t("updateDocument") : t("saveToDocument")}
+              </h2>
               <button onClick={() => setIsSaveModalOpen(false)} className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700">
                 <XMarkIcon className="h-5 w-5" />
               </button>

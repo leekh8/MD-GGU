@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon, CheckIcon, XMarkIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 function DocumentDetail() {
   const { t } = useTranslation();
@@ -63,6 +63,15 @@ function DocumentDetail() {
     setTitle(document.title || "");
     setContent(document.content || "");
     setEditMode(false);
+  };
+
+  // 에디터에서 열기: 현재 문서 정보를 localStorage에 저장 후 에디터로 이동
+  const handleOpenInEditor = () => {
+    localStorage.setItem(
+      "editorDocument",
+      JSON.stringify({ id: document.id, title: document.title, content: document.content })
+    );
+    navigate("/editor");
   };
 
   if (loading)
@@ -132,6 +141,14 @@ function DocumentDetail() {
                 {document.title || t("untitled")}
               </h1>
               <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={handleOpenInEditor}
+                  className="btn btn-primary flex items-center gap-1"
+                  title={t("openInEditor")}
+                >
+                  <PencilSquareIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t("openInEditor")}</span>
+                </button>
                 <button
                   onClick={() => setEditMode(true)}
                   className="btn btn-secondary flex items-center gap-1"
