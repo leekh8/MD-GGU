@@ -1,0 +1,16 @@
+# ── PostgreSQL ───────────────────────────────────────────────────────────────
+# 로컬: jdbc:postgresql://localhost:5432/mdggu
+# Docker: jdbc:postgresql://db:5432/mdggu
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/mdggu
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=your_password
+
+# ── JWT ──────────────────────────────────────────────────────────────────────
+# 256bit 이상 랜덤 문자열 권장 (예: openssl rand -base64 64)
+jwt.secret=your-very-long-secret-key-at-least-256-bits
+jwt.access-token-expiration=1800000    # 30분 (ms)
+jwt.refresh-token-expiration=604800000 # 7일 (ms)
+
+# ── CORS 허용 주소 ────────────────────────────────────────────────────────────
+frontend.url=http://localhost:5173
+python.url=http://localhost:5000

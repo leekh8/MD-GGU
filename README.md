@@ -1,69 +1,212 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=auto&height=100&section=header&fontSize=90)
+# MD-GGU 📝
 
-# MDGGU: 마크다운 최적화 프로그램 📝
+마크다운 문서를 작성·관리하고 AI 기반으로 요약·이모지·참고링크를 자동 생성하는 풀스택 웹 애플리케이션입니다.
 
-## 프로그램 개요
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)](https://www.postgresql.org)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com)
 
-### 목적
+---
 
-마크다운으로 작성된 글을 블로그에 적합하게 정리하여 마크다운 형식으로 다시 제공하는 프로그램.
+## 주요 기능
 
-### 주요 기능
+| 기능 | 설명 |
+|------|------|
+| **마크다운 에디터** | 실시간 미리보기, WYSIWYG 툴바, 단축키(Ctrl+B/I/K…), 자동 저장 |
+| **AI 최적화** | TF 기반 추출 요약 · 키워드→이모지 추천 · 참고링크 추출 (비로그인 사용 가능) |
+| **문서 관리** | 작성한 문서 저장·수정·삭제, 최신순/이름순 정렬 |
+| **에디터 연동** | 문서 상세에서 에디터로 불러와 수정 후 업데이트 |
+| **JWT 인증** | Access Token(localStorage) + Refresh Token(HttpOnly Cookie), 자동 갱신 |
+| **다국어** | 한국어 / English 전환 (i18next) |
+| **다크모드** | 시스템 설정 독립 토글, localStorage 유지 |
+| **닉네임 생성** | Python Flask 서비스 — Markov Chain / Deep Learning 방식 |
 
-- **문서 변환**: 원본 마크다운 문서를 읽어 들여 블로그에 적합한 형식으로 변환.
-- **요약 제공**: 주요 내용을 요약하여 블로그 글의 가독성을 높임.
-- **추가 정보 제공**: 관련된 추가적인 정보를 마크다운 문서 내에서 제공.
-- **이모지 추가**: 글의 감정이나 중요도를 표현할 수 있는 이모지를 자동으로 추가.
-- **참고 문서 링크**: 관련 자료나 출처를 링크로 제공하는 기능을 포함(FOOTNOTES 활용).
+---
 
 ## 기술 스택
 
-### 백엔드
+### Frontend
+- **React 18** + Vite 5 + React Router v6
+- **Tailwind CSS 3** (다크모드 class 방식)
+- react-markdown · remark-gfm · rehype-katex
+- i18next · react-i18next
+- Axios (인터셉터 기반 JWT 자동 갱신)
+- Heroicons
 
-- **Java**: REST API 구현 및 데이터 처리 로직에 활용 및 Spring Security를 이용하여 안전한 인증/인가 기능을 제공
-- **Python**: 데이터 분석, 마크다운 변환 알고리즘, 그리고 자연어 처리 작업에 활용. Flask 또는 FastAPI를 사용.
-- **Node.js**: 선택적으로 실시간 통신이나 비동기 데이터 처리에 사용. Express.js와 같은 프레임워크를 활용.
+### Backend (Spring Boot)
+- **Spring Boot 3** · Spring Security (Stateless JWT)
+- **PostgreSQL** (JPA / Hibernate)
+- springdoc-openapi (Swagger UI: `/swagger-ui/index.html`)
+- JWT (Access 30분 + Refresh 7일)
 
-### 프론트엔드
+### Python Service (Flask)
+- 닉네임 생성: Markov Chain · LSTM 기반 Deep Learning
+- `/generate_nickname` 엔드포인트
 
-- **React**: 사용자 인터페이스를 구축하는 주요 라이브러리. Tailwind CSS와 함께 사용하여 모던하고 반응형의 웹 프론트엔드 디자인 구현.
-- **Flutter**: 모바일 앱 개발에 활용하여 Android와 iOS 플랫폼 모두에 배포 가능한 크로스 플랫폼 애플리케이션 구축.
+### Infra
+- **Docker Compose** (nginx · frontend · backend)
+- Nginx 리버스 프록시
 
-### 데이터베이스
+---
 
-- **MongoDB**: 유연한 데이터 구조와 빠른 검색 기능을 제공하는 NoSQL 데이터베이스.
-- **PostgreSQL**: 관계형 데이터베이스로, 복잡한 쿼리 처리와 트랜잭션 관리에 우수한 성능 제공.
+## 아키텍처
 
-### 기타 기술
+```
+Browser
+  │
+  ▼
+Nginx (:80)
+  ├── /          → React SPA (:3000)
+  └── /api/**    → Spring Boot (:8080)
+                      └── /api/v1/optimize → Spring 내부 처리
+                      └── DB: PostgreSQL (:5432)
 
-- **Docker**: 애플리케이션 컨테이너화를 통한 배포 용이성 및 환경 일관성 보장.
-- **GitHub**: 코드 협업 및 버전 관리.
-- **CI/CD**: Jenkins나 GitHub Actions를 사용하여 코드 통합, 테스트 자동화 및 배포 자동화 구현.
+Python Flask (:5000)  ← MyPage 닉네임 생성 시 직접 호출
+```
 
-## 아키텍처 구성
+---
 
-- **API 게이트웨이 (Spring Cloud Gateway)**: Spring Cloud Gateway를 사용하여 API 게이트웨이를 구축하고, 라우팅, 로드 밸런싱, 인증/인가 등을 처리.
-- **마이크로서비스 아키텍처**: 각 기능별로 마이크로서비스를 분리하여 개발하고, Spring Cloud를 사용하여 서비스 검색, 부하 분산, 장애 복구 등을 관리다.
-- **비동기 처리**: Python 기반 데이터 처리 및 분석 모듈을 별도의 마이크로서비스로 구성하고 메시지 큐 (RabbitMQ, Kafka 등) 를 이용하여 비동기 처리를 지원.
-- **프론트엔드**: React로 구현한 SPA (Single Page Application) 와 Flutter 기반 모바일 애플리케이션을 통해 사용자 인터페이스를 제공.
+## 빠른 시작
 
-## 기능 명세
+### 사전 요구사항
+- Docker & Docker Compose
+- (로컬 개발) Node.js 20+, JDK 17+, Python 3.10+, PostgreSQL 16
 
-- **마크다운 변환 엔진**:
-  - 문서 분석: 마크다운 문법 분석, 제목, 코드 블록, 이미지 등 요소 추출.
-  - 요약 제공: 텍스트 요약 알고리즘을 사용하여 핵심 내용 추출 및 요약 생성.
-  - 이모지 추가: 감정 분석 또는 키워드 기반 이모지 자동 추천 및 추가.
-  - 참고 링크 추가: FOOTNOTES를 활용한 참고 자료 및 출처 링크 자동 생성.
-- - **사용자 인터페이페이스**:
-  * 마크다운 에디터: 실시간 미리보기, 문법 강조, 단축키 지원 등 편리한 편집 기능 제공.
-  * 템플릿 선택: 다양한 블로그 플랫폼에 최적화된 템플릿 제공 및 사용자 정의 템플릿 지원.
-- **데이터 관리**:
-  - 사용자 데이터 보호: 개인 정보 암호화, 접근 제어 등 보안 강화.
-  - 백업 및 복구: 데이터 백업 및 복구 기능 제공.
+### 1. 환경변수 설정
 
-## 배포 및 유지 보수
+```bash
+# 프로젝트 루트
+cp .env.example .env
 
-- **CI/CD 파이프라인**: 지속적인 통합과 배포를 자동화하는 파이프라인 구축.
-- **문서화**: 시스템 아키텍처, API 문서, 사용자 매뉴얼 등을 작성하여 프로그램 사용과 유지 보수를 지원.
+# 프론트엔드
+cp frontend/.env.example frontend/.env
 
-![footer](https://capsule-render.vercel.app/api?type=waving&color=auto&height=150&section=footer&fontSize=90)
+# Spring Boot
+cp backend/mdggu-backend/.env.example backend/mdggu-backend/.env
+```
+
+각 파일을 열어 값을 채워주세요.
+
+### 2. Docker Compose로 실행
+
+```bash
+docker-compose up --build
+```
+
+접속: http://localhost
+
+### 3. 로컬 개발 환경
+
+**Frontend**
+```bash
+cd frontend
+npm install
+npm run start      # http://localhost:5173
+```
+
+**Backend**
+```bash
+cd backend/mdggu-backend
+./gradlew bootRun
+# http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui/index.html
+```
+
+**Python Service**
+```bash
+cd backend/python-service
+pip install -r requirements.txt
+python app.py      # http://localhost:5000
+```
+
+---
+
+## 환경변수 요약
+
+| 위치 | 변수 | 설명 |
+|------|------|------|
+| `frontend/.env` | `VITE_BACKEND_URL` | Spring Boot 서버 주소 |
+| `frontend/.env` | `VITE_PYTHON_URL` | Python Flask 서버 주소 |
+| `application.properties` | `SPRING_DATASOURCE_URL` | PostgreSQL JDBC URL |
+| `application.properties` | `SPRING_DATASOURCE_USERNAME` | DB 사용자명 |
+| `application.properties` | `SPRING_DATASOURCE_PASSWORD` | DB 비밀번호 |
+| `application.properties` | `jwt.secret` | JWT 서명 키 (256bit 이상) |
+| `application.properties` | `jwt.access-token-expiration` | Access Token 만료(ms) |
+| `application.properties` | `jwt.refresh-token-expiration` | Refresh Token 만료(ms) |
+| `application.properties` | `frontend.url` | CORS 허용 프론트엔드 URL |
+| `application.properties` | `python.url` | CORS 허용 Python 서비스 URL |
+
+---
+
+## API 문서
+
+서버 실행 후 Swagger UI에서 전체 API 확인 가능:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+주요 엔드포인트:
+
+| Method | Path | Auth | 설명 |
+|--------|------|------|------|
+| POST | `/api/v1/auth/register` | ❌ | 회원가입 |
+| POST | `/api/v1/auth/login` | ❌ | 로그인 |
+| POST | `/api/v1/auth/refresh` | ❌ | 토큰 갱신 |
+| GET | `/api/v1/auth/me` | ✅ | 내 정보 |
+| GET | `/api/v1/documents` | ✅ | 문서 목록 |
+| POST | `/api/v1/documents` | ✅ | 문서 생성 |
+| PUT | `/api/v1/documents/{id}` | ✅ | 문서 수정 |
+| DELETE | `/api/v1/documents/{id}` | ✅ | 문서 삭제 |
+| POST | `/api/v1/optimize` | ❌ | 마크다운 최적화 |
+| POST | `/api/v1/optimize/{id}` | ✅ | 문서 최적화 후 저장 |
+
+---
+
+## 에디터 단축키
+
+| 단축키 | 기능 |
+|--------|------|
+| `Ctrl + B` | 굵게 |
+| `Ctrl + I` | 이탤릭 |
+| `Ctrl + K` | 링크 삽입 |
+| `Ctrl + H` | 제목 |
+| `Ctrl + Shift + M` | 코드 블록 |
+| `Ctrl + S` | 문서로 저장 |
+| `Ctrl + Z` | 실행 취소 |
+| `Alt + H` | 단축키 가이드 |
+
+---
+
+## 프로젝트 구조
+
+```
+MD-GGU/
+├── frontend/                  # React + Vite
+│   ├── src/
+│   │   ├── components/        # Editor, Header, DocumentList 등
+│   │   ├── pages/             # LoginPage, SignupPage, MyPage 등
+│   │   ├── api.js             # Axios 클라이언트 + 인터셉터
+│   │   └── styles.css         # Tailwind + 공통 컴포넌트
+│   └── public/locales/        # i18n 번역 파일 (ko, en)
+│
+├── backend/
+│   ├── mdggu-backend/         # Spring Boot 3
+│   │   └── src/main/java/com/mdggu/
+│   │       ├── config/        # Security, JWT, Swagger
+│   │       ├── controller/    # Auth, Document, Optimize
+│   │       ├── service/       # 비즈니스 로직
+│   │       └── model/         # JPA Entity
+│   └── python-service/        # Flask 닉네임 생성 서비스
+│
+├── nginx/                     # Nginx 설정
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+## 라이선스
+
+MIT License
