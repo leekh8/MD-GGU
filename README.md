@@ -1,6 +1,6 @@
 # MD-GGU 📝
 
-마크다운 문서를 작성·관리하고 AI 기반으로 요약·이모지·참고링크를 자동 생성하는 풀스택 웹 애플리케이션입니다.
+마크다운 문서를 작성·관리하고, 규칙 기반(TF 빈도·정규식)으로 요약·이모지·참고링크를 자동 추출하는 풀스택 웹 애플리케이션입니다.
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
@@ -14,13 +14,13 @@
 | 기능 | 설명 |
 |------|------|
 | **마크다운 에디터** | 실시간 미리보기, WYSIWYG 툴바, 단축키(Ctrl+B/I/K…), 자동 저장 |
-| **AI 최적화** | TF 기반 추출 요약 · 키워드→이모지 추천 · 참고링크 추출 (비로그인 사용 가능) |
+| **규칙 기반 최적화** | TF 기반 추출 요약 · 키워드→이모지 추천 · 참고링크 추출 (비로그인 사용 가능) |
 | **문서 관리** | 작성한 문서 저장·수정·삭제, 최신순/이름순 정렬 |
 | **에디터 연동** | 문서 상세에서 에디터로 불러와 수정 후 업데이트 |
 | **JWT 인증** | Access Token(localStorage) + Refresh Token(HttpOnly Cookie), 자동 갱신 |
 | **다국어** | 한국어 / English 전환 (i18next) |
 | **다크모드** | 시스템 설정 독립 토글, localStorage 유지 |
-| **닉네임 생성** | Python Flask 서비스 — Markov Chain / Deep Learning 방식 |
+| **닉네임 생성** | Python Flask 서비스 — Markov Chain 방식 (Deep Learning 모델은 실험적, 토크나이저 미포함) |
 
 ---
 
