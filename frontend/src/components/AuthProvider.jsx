@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
       const userData = await getUser();
       setUser(userData);
       setAuthMessage({ status: "success", message: "loginSuccessful" });
+      return userData; // 호출부에서 role 기반 리다이렉트에 사용 (setUser는 비동기라 auth.user는 아직 stale)
     } catch (error) {
       setAuthMessage({ status: "error", message: "incorrectEmailOrPassword" });
       throw error;

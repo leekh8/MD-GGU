@@ -47,8 +47,9 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await auth.login(email, password);
-      setTimeout(() => navigate(auth.user?.role === "ADMIN" ? "/admin" : "/"), 300);
+      // login이 방금 조회한 user를 반환 — auth.user는 setUser 비동기라 이 시점엔 아직 stale
+      const user = await auth.login(email, password);
+      navigate(user?.role === "ADMIN" ? "/admin" : "/");
     } catch {
       setSubmitErr(t("incorrectEmailOrPassword"));
     } finally {

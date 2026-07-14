@@ -35,6 +35,19 @@ const drainQueue = (error, token) => {
   pendingQueue = [];
 };
 
+// 동시 요청이 몰려도 refresh는 딱 1회만 수행 — 진행 중이면 큐에서 대기했다가 새 토큰을 공유받는다.
+// (요청 인터셉터의 선제 갱신과 응답 인터셉터의 401 재시도가 같은 게이트를 쓰게 해 중복 refresh를 막는다)
+const getFreshToken = () => {
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => pendingQueue.push({ resolve, reject }));
+  }
+  isRefreshing = true;
+  return refreshAccessToken()
+    .then((token) => { drainQueue(null, token); return token; })
+    .catch((err) => { drainQueue(err, null); forceLogout(); throw err; })
+    .finally(() => { isRefreshing = false; });
+};
+
 // ── 요청 인터셉터: 토큰 주입 ─────────────────────────────────────────────────
 apiClient.interceptors.request.use(
   async (config) => {
@@ -44,8 +57,8 @@ apiClient.interceptors.request.use(
     try {
       const decoded = jwtDecode(accessToken);
       if (decoded.exp < Date.now() / 1000) {
-        // 만료 → 갱신 시도
-        const newToken = await refreshAccessToken();
+        // 만료 → 갱신 시도 (동시 요청은 getFreshToken 게이트로 1회만 refresh)
+        const newToken = await getFreshToken();
         config.headers.Authorization = `Bearer ${newToken}`;
       } else {
         // 유효 → 그대로 사용
@@ -73,34 +86,15 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 그 외 401 → 1회 갱신 시도
+    // 그 외 401 → 1회 갱신 시도 (getFreshToken이 중복 refresh·큐 대기·실패 시 로그아웃까지 처리)
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
-
-      if (isRefreshing) {
-        // 갱신 중이면 큐에 대기
-        return new Promise((resolve, reject) => {
-          pendingQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            original.headers.Authorization = `Bearer ${token}`;
-            return apiClient(original);
-          })
-          .catch(Promise.reject);
-      }
-
-      isRefreshing = true;
       try {
-        const newToken = await refreshAccessToken();
-        drainQueue(null, newToken);
+        const newToken = await getFreshToken();
         original.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(original);
       } catch (refreshErr) {
-        drainQueue(refreshErr, null);
-        forceLogout();
         return Promise.reject(refreshErr);
-      } finally {
-        isRefreshing = false;
       }
     }
 
