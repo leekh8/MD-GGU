@@ -13,7 +13,7 @@
 
 | 기능 | 설명 |
 |------|------|
-| **마크다운 에디터** | 실시간 미리보기, WYSIWYG 툴바, 단축키(Ctrl+B/I/K…), 자동 저장 |
+| **마크다운 에디터** | 실시간 미리보기, WYSIWYG 툴바, 단축키(Ctrl+B/I/K…), 자동 저장(툴바·붙여넣기 편집 포함), KaTeX 수식($…$), 단어·글자 수 |
 | **규칙 기반 최적화** | TF 기반 추출 요약 · 키워드→이모지 추천 · 참고링크 추출 (비로그인 사용 가능) |
 | **문서 관리** | 작성한 문서 저장·수정·삭제, 최신순/이름순 정렬 |
 | **에디터 연동** | 문서 상세에서 에디터로 불러와 수정 후 업데이트 |
@@ -29,7 +29,7 @@
 ### Frontend
 - **React 18** + Vite 5 + React Router v6
 - **Tailwind CSS 3** (다크모드 class 방식)
-- react-markdown · remark-gfm · rehype-katex
+- react-markdown · remark-gfm · remark-math · rehype-katex (KaTeX 수식)
 - i18next · react-i18next
 - Axios (인터셉터 기반 JWT 자동 갱신)
 - Heroicons

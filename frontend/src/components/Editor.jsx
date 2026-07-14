@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import jsPDF from "jspdf";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import TextareaAutosize from "react-textarea-autosize";
 import {
   ClipboardDocumentIcon,
@@ -73,7 +75,6 @@ const Editor = () => {
   const navigate = useNavigate();
 
   const [content, setContent]       = useState("");
-  const [style, setStyle]           = useState("default");
   const [fileName, setFileName]     = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
   const textAreaRef                 = useRef(null);
@@ -116,12 +117,6 @@ const Editor = () => {
     if (saved) setContent(saved);
   }, []);
 
-  const handleChange = (e) => {
-    setContent(e.target.value);
-    localStorage.setItem("markdownContent", e.target.value);
-    saveHistory(e.target.value);
-  };
-
   // ── Undo 히스토리 ──────────────────────────────────────────────────────────
   const [history, setHistory]         = useState([]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -132,9 +127,19 @@ const Editor = () => {
     setHistoryIndex(newHistory.length);
   };
 
+  // content 변경 단일 경로 — 자동 저장(localStorage)과 undo 히스토리를 항상 함께 반영.
+  // (툴바·리스트 자동완성·파일 열기 등 setContent를 직접 부르면 자동 저장/undo에서 누락된다)
+  const applyContent = (next, record = true) => {
+    setContent(next);
+    localStorage.setItem("markdownContent", next);
+    if (record) saveHistory(next);
+  };
+
+  const handleChange = (e) => applyContent(e.target.value);
+
   const undo = () => {
     if (historyIndex > 0) {
-      setContent(history[historyIndex - 1]);
+      applyContent(history[historyIndex - 1], false);
       setHistoryIndex(historyIndex - 1);
     }
   };
@@ -158,7 +163,7 @@ const Editor = () => {
         selectionEnd + wrapperEnd.length
       ) === wrappedText
     ) {
-      setContent(
+      applyContent(
         `${before.slice(0, -wrapperStart.length)}${selectedText}${after.slice(wrapperEnd.length)}`
       );
       setTimeout(() => {
@@ -169,7 +174,7 @@ const Editor = () => {
       const lastNewline = before.lastIndexOf("\n") + 1;
       const lineStart   = before.substring(lastNewline);
       if (lineStart.startsWith(wrapperStart)) {
-        setContent(
+        applyContent(
           `${before.slice(0, lastNewline)}${lineStart.slice(wrapperStart.length)}${after}`
         );
         setTimeout(() => {
@@ -177,7 +182,7 @@ const Editor = () => {
           textAreaRef.current.selectionEnd = selectionStart - wrapperStart.length;
         }, 0);
       } else {
-        setContent(
+        applyContent(
           `${before.slice(0, lastNewline)}${wrapperStart}${lineStart}${after}`
         );
         setTimeout(() => {
@@ -186,7 +191,7 @@ const Editor = () => {
         }, 0);
       }
     } else {
-      setContent(`${before}${wrapperStart}${selectedText}${wrapperEnd}${after}`);
+      applyContent(`${before}${wrapperStart}${selectedText}${wrapperEnd}${after}`);
       setTimeout(() => {
         textAreaRef.current.selectionStart = selectionStart + wrapperStart.length;
         textAreaRef.current.selectionEnd   = selectionEnd   + wrapperStart.length;
@@ -216,13 +221,13 @@ const Editor = () => {
         e.preventDefault();
         const before = value.substring(0, selectionStart - 2);
         const after  = value.substring(selectionStart);
-        setContent(`${before}${after}`);
+        applyContent(`${before}${after}`);
         setTimeout(() => { e.target.selectionStart = e.target.selectionEnd = before.length; }, 0);
       } else if (line.startsWith("- ")) {
         e.preventDefault();
         const before = value.substring(0, selectionStart);
         const after  = value.substring(selectionStart);
-        setContent(`${before}\n- ${after}`);
+        applyContent(`${before}\n- ${after}`);
         setTimeout(() => { e.target.selectionStart = e.target.selectionEnd = selectionStart + 3; }, 0);
       }
     }
@@ -240,23 +245,41 @@ const Editor = () => {
     if (file) {
       setFileName(file.name);
       const reader = new FileReader();
-      reader.onload = (ev) => setContent(ev.target.result);
+      reader.onload = (ev) => applyContent(ev.target.result);
       reader.readAsText(file);
     }
   };
 
+  // 저장 파일명: 문서 제목 > 업로드 파일명 > 기본값
+  const baseName = () =>
+    ((docTitle || fileName || "document").replace(/\.md$/i, "").trim() || "document");
+
   const handleDownload = () => {
     const blob = new Blob([content], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "document.md";
+    link.href = url;
+    link.download = `${baseName()}.md`;
     link.click();
+    URL.revokeObjectURL(url); // 메모리 누수 방지
   };
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-    doc.text(content, 10, 10);
-    doc.save("document.pdf");
+    const margin = 10;
+    const maxWidth = doc.internal.pageSize.getWidth() - margin * 2;
+    const bottom = doc.internal.pageSize.getHeight() - margin;
+    const lineHeight = 7;
+    // 긴 줄은 페이지 폭에 맞춰 접고, 페이지를 넘기면 새 페이지로.
+    // 주의: jsPDF 기본 폰트(Helvetica)는 한글을 렌더하지 못한다(공백 출력) — 한글 PDF는 유니코드 폰트 임베딩 필요.
+    const lines = doc.splitTextToSize(content || "", maxWidth);
+    let y = margin;
+    lines.forEach((line) => {
+      if (y > bottom) { doc.addPage(); y = margin; }
+      doc.text(line, margin, y);
+      y += lineHeight;
+    });
+    doc.save(`${baseName()}.pdf`);
   };
 
   // ── 최적화 ─────────────────────────────────────────────────────────────────
@@ -338,16 +361,11 @@ const Editor = () => {
       <div className="pt-4 flex flex-col md:flex-row md:justify-between items-center mb-3">
         <h1>{t("markdown editor")}</h1>
         <div className="flex items-center mt-2 md:mt-0 gap-2">
-          <select onChange={(e) => setStyle(e.target.value)} value={style}>
-            <option value="default">{t("default")}</option>
-            <option value="creative">{t("creative")}</option>
-            <option value="professional">{t("professional")}</option>
-          </select>
-
           {/* 단축키 안내 버튼 */}
           <button
             onClick={toggleModal}
             title={t("shortcutGuide")}
+            aria-label={t("shortcutGuide")}
             className="p-2 border rounded dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <QuestionMarkCircleIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
@@ -464,7 +482,11 @@ const Editor = () => {
 
         {/* 미리보기 */}
         <div className="md:w-1/2 preview-box">
-          <ReactMarkdown className="prose" remarkPlugins={[remarkGfm, rehypeKatex]}>
+          <ReactMarkdown
+            className="prose"
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+          >
             {content}
           </ReactMarkdown>
         </div>
@@ -478,7 +500,7 @@ const Editor = () => {
               <SparklesIcon className="h-5 w-5 text-yellow-500" />
               {t("optimize result")}
             </h3>
-            <button onClick={() => setOptimizeResult(null)} className="p-1 rounded text-gray-500 hover:text-gray-700 dark:text-gray-400">
+            <button onClick={() => setOptimizeResult(null)} aria-label={t("close")} className="p-1 rounded text-gray-500 hover:text-gray-700 dark:text-gray-400">
               <XMarkIcon className="h-5 w-5" />
             </button>
           </div>
@@ -514,10 +536,10 @@ const Editor = () => {
       {/* ── 단축키 모달 ──────────────────────────────────────────── */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div ref={modalRef} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="shortcut-modal-title" className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-white">⌨️ {t("shortcutGuide")}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700">
+              <h2 id="shortcut-modal-title" className="text-lg font-bold text-gray-800 dark:text-white">⌨️ {t("shortcutGuide")}</h2>
+              <button onClick={() => setIsModalOpen(false)} aria-label={t("close")} className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700">
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
@@ -545,12 +567,12 @@ const Editor = () => {
       {/* ── 문서 저장 모달 ───────────────────────────────────────── */}
       {isSaveModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div ref={saveModalRef} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div ref={saveModalRef} role="dialog" aria-modal="true" aria-labelledby="save-modal-title" className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-white">
+              <h2 id="save-modal-title" className="text-lg font-bold text-gray-800 dark:text-white">
                 {editingDocId ? t("updateDocument") : t("saveToDocument")}
               </h2>
-              <button onClick={() => setIsSaveModalOpen(false)} className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700">
+              <button onClick={() => setIsSaveModalOpen(false)} aria-label={t("close")} className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700">
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
