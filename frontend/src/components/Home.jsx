@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
-import AuthMessage from "./AuthMessage";
 
 const HomePage = () => {
   const { t }    = useTranslation();
@@ -16,8 +15,6 @@ const HomePage = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-16 text-center">
-        <AuthMessage />
-
         <h1 className="text-4xl font-bold text-brand-blue dark:text-white mb-3">
           {t("welcome to mdggu")}
         </h1>

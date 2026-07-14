@@ -13,36 +13,43 @@ function DocumentDetail() {
   const navigate = useNavigate();
   const [document, setDocument] = useState(null);
   const [loading, setLoading]   = useState(false);
+  const [loadError, setLoadError] = useState(false); // 조회 실패(500/네트워크) — "찾을 수 없음"과 구분
   const [editMode, setEditMode] = useState(false);
   const [title, setTitle]       = useState("");
   const [content, setContent]   = useState("");
   const [saving, setSaving]     = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [actionError, setActionError] = useState(""); // 저장/삭제 실패 사용자 피드백
+
+  const fetchDocument = async () => {
+    setLoading(true);
+    setLoadError(false);
+    try {
+      const response = await getDocumentById(id);
+      const doc = response.data;
+      setDocument(doc);
+      setTitle(doc.title || "");
+      setContent(doc.content || "");
+    } catch {
+      setLoadError(true); // document는 null 유지 + 에러 화면(재시도 제공)
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDocument = async () => {
-      setLoading(true);
-      try {
-        const response = await getDocumentById(id);
-        const doc = response.data;
-        setDocument(doc);
-        setTitle(doc.title || "");
-        setContent(doc.content || "");
-      } catch {
-        // 에러는 document === null 으로 처리
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchDocument();
   }, [id]);
 
   const handleUpdate = async () => {
     setSaving(true);
+    setActionError("");
     try {
       const updated = await updateDocument(id, { title, content });
       setDocument(updated.data);
       setEditMode(false);
+    } catch {
+      setActionError(t("documentSaveFailed")); // 편집 모드 유지 — 사용자가 재시도 가능
     } finally {
       setSaving(false);
     }
@@ -51,9 +58,12 @@ function DocumentDetail() {
   const handleDelete = async () => {
     if (!window.confirm(t("confirmDelete"))) return;
     setDeleting(true);
+    setActionError("");
     try {
       await deleteDocument(id);
       navigate("/documents");
+    } catch {
+      setActionError(t("deleteFailed"));
     } finally {
       setDeleting(false);
     }
@@ -86,6 +96,14 @@ function DocumentDetail() {
       </div>
     );
 
+  if (loadError)
+    return (
+      <div className="container mx-auto px-4 py-10 text-center space-y-4">
+        <p className="text-gray-500 dark:text-gray-400">{t("documentLoadFailed")}</p>
+        <button onClick={fetchDocument} className="btn btn-primary">{t("retry")}</button>
+      </div>
+    );
+
   if (!document)
     return (
       <div className="container mx-auto px-4 py-10 text-center">
@@ -99,6 +117,11 @@ function DocumentDetail() {
         <title>{t("mdggu")} ・ {document.title || t("untitled")}</title>
       </Helmet>
       <div className="container mx-auto px-4 py-6">
+        {actionError && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm" role="alert">
+            {actionError}
+          </div>
+        )}
         {editMode ? (
           /* ── 편집 모드 ── */
           <div className="space-y-4">
@@ -145,6 +168,7 @@ function DocumentDetail() {
                   onClick={handleOpenInEditor}
                   className="btn btn-primary flex items-center gap-1"
                   title={t("openInEditor")}
+                  aria-label={t("openInEditor")}
                 >
                   <PencilSquareIcon className="h-4 w-4" />
                   <span className="hidden sm:inline">{t("openInEditor")}</span>
@@ -152,6 +176,7 @@ function DocumentDetail() {
                 <button
                   onClick={() => setEditMode(true)}
                   className="btn btn-secondary flex items-center gap-1"
+                  aria-label={t("edit")}
                 >
                   <PencilIcon className="h-4 w-4" />
                   <span className="hidden sm:inline">{t("edit")}</span>
@@ -160,6 +185,7 @@ function DocumentDetail() {
                   onClick={handleDelete}
                   disabled={deleting}
                   className="btn btn-danger flex items-center gap-1 disabled:opacity-60"
+                  aria-label={t("delete")}
                 >
                   <TrashIcon className="h-4 w-4" />
                   <span className="hidden sm:inline">{t("delete")}</span>

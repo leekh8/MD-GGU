@@ -34,6 +34,7 @@ const AuthMessage = () => {
       <button
         type="button"
         className="text-white ml-4"
+        aria-label={t("close")}
         onClick={() => setAuthMessage(null)}
       >
         <svg
@@ -41,6 +42,7 @@ const AuthMessage = () => {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"

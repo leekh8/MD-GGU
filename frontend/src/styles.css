@@ -74,6 +74,13 @@ body {
     @apply bg-gray-700 hover:bg-gray-600;
   }
 
+  /* 키보드 포커스 링 — 마우스 클릭엔 안 뜨고 Tab 이동 시에만 표시(키보드 사용자 가시성) */
+  button:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
+    @apply outline-none ring-2 ring-brand-blue ring-offset-2 ring-offset-white dark:ring-offset-gray-900;
+  }
+
   /* 페이지 카드 래퍼 */
   .page-card {
     @apply w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-soft
@@ -274,4 +281,16 @@ body {
 .dark {
   background-color: #121212;
   color: white;
+}
+
+/* 모션 민감 사용자 배려 — 스피너/펄스/트랜지션 최소화 (vestibular 장애 대응) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
