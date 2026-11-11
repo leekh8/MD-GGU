@@ -5,9 +5,13 @@
 /* Base styles */
 body {
   @apply m-0 font-sans antialiased subpixel-antialiased dark:bg-black dark:text-white;
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-    "Helvetica Neue", sans-serif;
+  /* 🛑 `Pretendard Variable` 을 먼저 적는다. index.html 이 거는 가변 판 CSS 가
+     그 이름으로 등록하고, 비가변 판은 `Pretendard` 로 등록한다. 둘 다 적어
+     두면 어느 판을 걸어도 먹는다. 하나만 적으면 조용히 OS 기본 글꼴로 떨어진다
+     (2026-11-11 까지 실제로 그랬다 - 지정만 해 두고 로드가 0건이었다). */
+  font-family: "Pretendard Variable", "Pretendard", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

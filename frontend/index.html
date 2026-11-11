@@ -1,9 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- 🛑 lang 이 "en" 이었다. 한국어 앱이라 스크린 리더가 영어로 읽고,
+     브라우저가 줄바꿈과 글꼴을 영어 기준으로 고른다. -->
+<html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" />
+
+    <!-- 🛑 title 이 아예 없어서 탭에 주소가 그대로 떴다. -->
+    <title>MDGGU - 마크다운 문서 작성과 자동 요약</title>
+    <meta
+      name="description"
+      content="마크다운 문서를 작성하고 관리하며, 규칙 기반으로 요약과 참고링크를 자동 추출합니다."
+    />
+
+    <!-- 글꼴.
+         🛑 `styles.css` 와 `tailwind.config.js` 가 Pretendard 를 지정해 두고
+            **로드하는 곳이 한 곳도 없었다**(2026-11-11 실측, grep 0건). 그래서
+            모든 방문자가 OS 기본 글꼴을 보고 있었고, 글꼴 설정은 적어만 둔
+            글자였다.
+         동적 서브셋이라 쓰는 글자 묶음만 내려온다. 한글 전체를 받으면
+         수 MB 인데 이 방식은 수십 KB 다.
+         🛑 **가변 판 CSS 는 글꼴 이름을 `Pretendard Variable` 로 등록한다**
+            (비가변 판은 `Pretendard`). 링크만 걸고 선언을 안 고치면 같은
+            꼴로 또 안 먹는다. 그래서 두 선언 자리에 이름을 둘 다 적어 뒀다. -->
+    <link
+      rel="preconnect"
+      href="https://cdn.jsdelivr.net"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
 
     <!-- Google AdSense Script -->
     <script
