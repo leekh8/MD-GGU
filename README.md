@@ -139,6 +139,68 @@ python app.py      # http://localhost:5000
 
 ---
 
+## 배포 (프론트엔드)
+
+> 🛑 **2026-11-11 까지 운영에서 Vite 개발 서버가 돌고 있었다.**
+>
+> `frontend/Dockerfile` 이 `CMD ["npm", "start"]` 였고 `start` 는 `vite`,
+> 곧 개발 서버다. 공개 주소가 내려 주는 HTML 에 `/@vite/client` 와
+> `/@react-refresh` 가 박혀 있었고 `/@vite/client` 가 HTTP 200 으로
+> 응답했다. 번들도 압축도 없이 `./src/index.jsx` 를 그대로 물려 줬다.
+>
+> `vite.config.js` 의 `server.allowedHosts` 에 onrender 주소가 들어 있던 것이
+> 그 자취다. 그 설정은 **개발 서버에만** 쓰이는 것이라, 운영에서 그것을
+> 고쳐야 했다는 것 자체가 개발 서버가 돌고 있었다는 뜻이다.
+>
+> 같이 켜져 있던 `server.fs.strict: false` 는 **프로젝트 밖 파일까지**
+> 내보내는 설정이다. 공개된 개발 서버에 그것이 걸려 있으면 파일이 새는 길이
+> 된다. 그 둘을 뺐다.
+
+지금은 빌드와 서빙이 갈려 있다. `frontend/Dockerfile` 1단계가 `vite build` 로
+`dist/` 를 만들고, 2단계 nginx 가 그것만 3000 포트로 내보낸다. 2단계 이미지에는
+node 도 소스도 들어가지 않는다.
+
+### Render 쪽에서 확인할 것
+
+저장소에 `render.yaml` 이 없어서 서비스 설정이 콘솔에 있다. **어느 방식으로
+띄우는지에 따라 할 일이 다르다.**
+
+| Render 설정 | 할 일 |
+|---|---|
+| Docker (Dockerfile 사용) | 할 일 없음. 다시 배포하면 위 Dockerfile 이 먹는다 |
+| Node 환경 (Build, Start 명령) | Start 명령이 `npm start` 면 **개발 서버가 계속 돈다.** 아래로 바꾼다 |
+
+Node 환경이면:
+
+```
+Build Command  npm install --legacy-peer-deps && npm run build
+Start Command  npm run serve -- --host 0.0.0.0 --port $PORT
+```
+
+⚠️ `npm run serve` 는 `vite preview` 다. 개발 서버보다는 낫지만 Vite 문서가
+운영용으로 만든 것이 아니라고 적어 둔 것이라 **임시 방편**이다. Docker 쪽으로
+돌리는 것이 맞고, 그러면 위 nginx 2단계가 그대로 쓰인다.
+
+🛑 점검은 설정 화면이 아니라 **내려오는 HTML** 로 한다. 개발 서버면 이것이 잡힌다.
+
+```bash
+curl -s https://mdggu-front.onrender.com/ | grep -c "@vite/client"   # 0 이어야 한다
+curl -s -o /dev/null -w "%{http_code}\n" https://mdggu-front.onrender.com/@vite/client   # 404 여야 한다
+```
+
+### 글꼴
+
+`styles.css` 와 `tailwind.config.js` 가 Pretendard 를 지정해 두고 **로드하는
+곳이 한 곳도 없었다**(실측 grep 0건). 모든 방문자가 OS 기본 글꼴을 보고 있었다.
+지금은 `index.html` 이 동적 서브셋 CSS 를 걸어 쓰는 글자 묶음만 받는다.
+
+🛑 **가변 판 CSS 는 글꼴 이름을 `Pretendard Variable` 로 등록한다**(비가변 판은
+`Pretendard`). 링크만 걸고 선언을 안 고치면 같은 꼴로 또 안 먹는다. 그래서 두
+선언 자리에 이름을 둘 다 적어 뒀고, **한쪽만 고치면 `font-sans` 를 쓴 자리와
+body 가 다른 글꼴로 갈린다.**
+
+---
+
 ## API 문서
 
 서버 실행 후 Swagger UI에서 전체 API 확인 가능:
