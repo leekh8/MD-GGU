@@ -2,18 +2,39 @@
 #    판 없이 적혀 있었다. 그러면 빌드할 때마다 최신판이 들어와서, 어제 되던
 #    배포가 오늘 안 된다. Render 의 MDGGU-python-service 가 11개월 전부터
 #    Failed deploy 였던 것이 그 꼴이다.
-#
-# 🛑 `tensorflow` 가 아니라 `tensorflow-cpu` 다. `tensorflow` 는 GPU 런타임을
-#    같이 묶어 와서 설치 용량이 몇 배다. 이 서비스는 1.3MB 모델로 글자를
-#    만드는 것뿐이라 GPU 를 쓸 일이 없고, 작은 인스턴스에서는 그 용량 차이가
-#    빌드 실패와 성공을 가른다.
-#
-# 🛑 2.15 에 묶어 둔 이유: 2.16 부터 Keras 3 이 기본이 되면서 **옛 Keras 2 로
-#    저장한 `.keras` 파일을 못 읽는 경우가 있다.** `nickname_generator.keras`
-#    가 어느 판으로 저장됐는지 저장소에 적혀 있지 않아, 읽히는 것이 확인된
-#    쪽에 머문다. 올릴 때는 모델 로드를 **먼저** 확인한다.
-#    (2.15 는 Python 3.9 ~ 3.11 을 받는다. Dockerfile 이 3.11 인 까닭이다)
 Flask==3.0.3
 gunicorn==22.0.0
-tensorflow-cpu==2.15.1
-numpy==1.26.4
+
+# ---------------------------------------------------------------------------
+# 🛑 **TensorFlow 를 뺐다** (2026-11-11). 깔아도 deep_learning 방식이 못 돈다.
+#
+#    두 가지가 다 막혀 있다.
+#
+#    1. **토크나이저 파일이 없다.**
+#       `nickname_generator_deep_learning.py` 가 import 시점에
+#       `nickname_generator_tokenizer.pkl` 을 읽는데 저장소에 그 파일이 없다
+#       (`git ls-files` 로 확인, 추적되지도 않는다). 모델만 있고 글자를
+#       숫자로 바꾸는 쪽이 없으니 모델을 쓸 수 없다.
+#
+#    2. **모델이 Keras 3 으로 저장됐다.**
+#       TF 2.15(Keras 2)로 읽어 봤더니 이렇게 죽었다.
+#         ValueError: Unrecognized keyword arguments: ['batch_shape']
+#         config={'batch_shape': [None, 5], ..., 'name': 'input_layer'}
+#       `batch_shape` 와 `input_layer` 는 **Keras 3** 의 이름이다
+#       (Keras 2 는 `batch_input_shape`, `input_1`). 즉 이 모델을 읽으려면
+#       **TF 2.16 이상**(Keras 3)이 필요하다. 2.15 로 박았던 것이 거꾸로였다.
+#
+#    둘 중 하나만 막혀도 안 되는데 둘 다 막혀 있다. 그래서 230MB 를 깔아
+#    못 쓰는 길을 들고 있지 않는다. 마르코프 방식은 표준 라이브러리로 돌고,
+#    `/health` 가 deep_learning 이 왜 안 되는지 그대로 알려 준다.
+#
+#    되살리려면 **순서가 있다.**
+#      ① 노트북으로 모델을 다시 학습하고 **토크나이저를 같이 저장**한다
+#           import pickle
+#           with open('nickname_generator_tokenizer.pkl', 'wb') as f:
+#               pickle.dump(tokenizer, f)
+#      ② 그 파일을 커밋한다 (모델과 짝이라 따로 두면 또 같은 일이 난다)
+#      ③ 아래 줄을 살린다. 2.16 **이상**이어야 한다
+#      ④ Dockerfile 의 「돌 수 있나」 검사에 모델 로드를 다시 넣는다
+#
+# tensorflow-cpu>=2.16,<3

@@ -31,15 +31,29 @@ COPY --from=build /install /usr/local
 
 COPY . .
 
-# 🛑 **모델이 실제로 읽히는지 빌드에서 확인한다.** TensorFlow 판과 모델 저장
-#    판이 어긋나면 로드만 실패하는데, 그러면 컨테이너는 뜨고 요청할 때마다
-#    500 이 난다. 「배포 성공인데 안 되는」 꼴이라 여기서 먼저 막는다.
-RUN python -c "import tensorflow as tf, os; \
-m = 'nickname_generator.keras'; \
-print('tensorflow', tf.__version__); \
-print('모델', m, os.path.getsize(m), 'bytes'); \
-tf.keras.models.load_model(m); \
-print('모델 로드 OK')"
+# 🛑 **빌드에서 「돌 수 있나」를 확인한다.**
+#
+#    처음에는 여기서 모델 로드를 확인했다. 그런데 그것은 **지금 통과할 수 없는
+#    검사**였다. 토크나이저 pkl 이 저장소에 없고, 모델은 Keras 3 으로 저장돼
+#    있어 TF 2.15(Keras 2)로는 읽히지도 않는다(까닭은 requirements.txt).
+#    통과할 수 없는 것을 막아 두면 배포가 영원히 안 된다 - 그건 지키는 것이
+#    아니라 멈춰 세우는 것이다.
+#
+#    그래서 **지금 돌아야 하는 것**을 센다.
+#      ① app.py 가 import 되나        (여기서 죽으면 서비스가 안 뜬다)
+#      ② 마르코프 방식이 글자를 내나   (지금 쓸 수 있는 유일한 방식)
+#      ③ /health 가 상태를 말하나      (밖에서 볼 길)
+#
+#    ①은 2년 동안 깨져 있던 자리다(존재하지 않는 이름을 import 했다).
+#    그걸 다시 깨뜨리면 여기서 걸린다.
+RUN python -c "import app, nickname_generator as ng; \
+n = ng.generate_nickname('markov_chain'); \
+assert isinstance(n, str) and n, f'마르코프가 글자를 안 냈다: {n!r}'; \
+print('markov OK:', n); \
+c = app.app.test_client(); \
+r = c.get('/health'); \
+assert r.status_code == 200, f'/health 가 {r.status_code}'; \
+print('health OK:', r.get_json())"
 
 # 루트로 돌리지 않는다
 RUN useradd --system --create-home --shell /usr/sbin/nologin flaskapp
