@@ -160,6 +160,41 @@ python app.py      # http://localhost:5000
 `dist/` 를 만들고, 2단계 nginx 가 그것만 3000 포트로 내보낸다. 2단계 이미지에는
 node 도 소스도 들어가지 않는다.
 
+### 🛑 VITE_* 는 런타임 환경변수가 아니다
+
+Vite 는 `import.meta.env.VITE_*` 를 **빌드 시점에 번들에 박는다.** 컨테이너에
+환경변수를 넣어도 이미 빌드된 번들은 바뀌지 않는다.
+
+전에는 운영에서 개발 서버가 돌아서 컨테이너가 뜰 때 값을 읽었고, 그래서 이
+성질이 가려져 있었다. 빌드로 옮기자마자 `baseURL` 이 `undefined` 가 됐다
+(2026-11-11 실측: 배포된 번들에서 백엔드 주소 **0건**). 화면은 그대로 뜨고
+API 만 조용히 죽는 꼴이다.
+
+Render 는 대시보드 환경변수를 build arg 로 자동 주입한다. 공식 문서:
+`automatically translates those values to Docker build arguments that are
+available during your image's build process`. 다만 **Dockerfile 에 `ARG`
+선언이 있어야** 받는다. 지금은 `ARG VITE_BACKEND_URL` / `ARG VITE_PYTHON_URL`
+이 들어 있다.
+
+| 값이 비면 | 어디서 멈추나 |
+|---|---|
+| build arg 가 안 옴 | `RUN test -n "$VITE_BACKEND_URL"` 에서 빌드 실패 |
+| arg 는 왔는데 번들에 안 박힘 | `RUN grep -rFq ... dist/assets/` 에서 빌드 실패 |
+
+둘을 나눠 둔 이유는 **다른 질문**이기 때문이다. 앞은 값이 왔는지, 뒤는 Vite 가
+그것을 정말 심었는지 본다. 변수 이름을 바꾸거나 치환이 빗나가면 앞은 통과하고
+뒤에서 걸린다.
+
+⚠️ **Render 의 두 단추가 다르다.** 빌드 시점 값을 바꿨으면
+`Save, rebuild, and deploy` 를 눌러야 한다. `Save and deploy` 는 공식 문서대로
+`redeploys your service's existing build with the new environment variables`
+라서 번들이 그대로다.
+
+🛑 비밀은 이 길로 보내지 않는다. 공식 문서가 `do not reference any build
+arguments that contain sensitive values` 라고 적어 뒀다. `VITE_*` 는 어차피
+브라우저 번들에 그대로 박히는 공개 값이라 괜찮고, 비밀이 필요해지면 secret
+file 과 `--mount=type=secret` 쪽이다.
+
 ### Render 쪽에서 확인할 것
 
 저장소에 `render.yaml` 이 없어서 서비스 설정이 콘솔에 있다. **어느 방식으로
