@@ -6,6 +6,12 @@ import com.mdggu.model.User;
 import com.mdggu.service.CustomUserDetailsService;
 import com.mdggu.service.UserService;
 import jakarta.servlet.http.Cookie;
+// 🛑 이 한 줄이 빠져 있어서 **2년간 컴파일이 안 됐다** (2026-11-11 확인).
+//    66행의 refreshToken(HttpServletRequest request, ...) 가 "cannot find
+//    symbol: class HttpServletRequest" 로 죽었다. 바로 아래 Response 는
+//    import 돼 있는데 Request 만 빠진 것이라, 코드를 읽으면 멀쩡해 보인다.
+//    Render 의 MDGGU-back 이 Failed deploy 였던 **첫 번째** 벽이다.
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
