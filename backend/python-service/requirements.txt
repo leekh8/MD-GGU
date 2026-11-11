@@ -1,3 +1,19 @@
-Flask
-gunicorn
-tensorflow
+# 🛑 **판을 박는다.** 전에는 `Flask` / `gunicorn` / `tensorflow` 세 줄이
+#    판 없이 적혀 있었다. 그러면 빌드할 때마다 최신판이 들어와서, 어제 되던
+#    배포가 오늘 안 된다. Render 의 MDGGU-python-service 가 11개월 전부터
+#    Failed deploy 였던 것이 그 꼴이다.
+#
+# 🛑 `tensorflow` 가 아니라 `tensorflow-cpu` 다. `tensorflow` 는 GPU 런타임을
+#    같이 묶어 와서 설치 용량이 몇 배다. 이 서비스는 1.3MB 모델로 글자를
+#    만드는 것뿐이라 GPU 를 쓸 일이 없고, 작은 인스턴스에서는 그 용량 차이가
+#    빌드 실패와 성공을 가른다.
+#
+# 🛑 2.15 에 묶어 둔 이유: 2.16 부터 Keras 3 이 기본이 되면서 **옛 Keras 2 로
+#    저장한 `.keras` 파일을 못 읽는 경우가 있다.** `nickname_generator.keras`
+#    가 어느 판으로 저장됐는지 저장소에 적혀 있지 않아, 읽히는 것이 확인된
+#    쪽에 머문다. 올릴 때는 모델 로드를 **먼저** 확인한다.
+#    (2.15 는 Python 3.9 ~ 3.11 을 받는다. Dockerfile 이 3.11 인 까닭이다)
+Flask==3.0.3
+gunicorn==22.0.0
+tensorflow-cpu==2.15.1
+numpy==1.26.4
