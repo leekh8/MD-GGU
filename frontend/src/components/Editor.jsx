@@ -21,6 +21,11 @@ import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { optimizeMarkdown, createDocument, updateDocument } from "../api";
 import { useAuth } from "./AuthProvider";
+import {
+  indentSelection,
+  outdentSelection,
+  continueList,
+} from "../utils/markdownIndent";
 
 // ── 툴바 버튼 정의 ─────────────────────────────────────────────────────────────
 const TOOLBAR_GROUPS = [
@@ -213,22 +218,57 @@ const Editor = () => {
     else if (altKey && key === "h")                      { e.preventDefault(); toggleModal(); }
     else if (ctrlKey && key === "s")                     { e.preventDefault(); openSaveModal(); }
 
-    // Enter 리스트 자동완성
-    const { selectionStart, value } = e.target;
-    const line = value.substring(0, selectionStart).split("\n").pop();
-    if (key === "Enter") {
-      if (line === "- ") {
+    const { selectionStart, selectionEnd, value } = e.target;
+
+    // 바뀐 글자와 커서 자리를 한 길로 적용한다 (자동 저장, undo 를 안 놓치게)
+    const apply = (res) => {
+      applyContent(res.value);
+      setTimeout(() => {
+        if (!e.target) return;
+        e.target.selectionStart = res.selectionStart;
+        e.target.selectionEnd   = res.selectionEnd;
+      }, 0);
+    };
+
+    /*
+     * Tab 들여쓰기 (2026-11-11).
+     *
+     * 규주: *"md-ggu에서 - 하고 tab 같은거 누르면 한단계 아래로 가야하는데
+     * 안가네?"*
+     *
+     * 🛑 **Tab 처리가 아예 없었다.** `grep -rn Tab src` 가 0건이었다. 그래서
+     *    textarea 에서 Tab 은 브라우저 기본 동작대로 **초점을 다음 요소로**
+     *    옮겼다. 들여쓰기가 안 되는 것이 아니라 아무도 그 키를 받지 않았다.
+     *
+     * 🛑 `preventDefault` 를 반드시 부른다. 안 부르면 글자는 들어가고 초점은
+     *    빠져나가서 다음 타자가 엉뚱한 곳에 찍힌다.
+     * 🛑 Ctrl, Alt 가 눌린 Tab 은 가져가지 않는다. Ctrl+Tab 은 브라우저의
+     *    탭 전환이고, 그것까지 막으면 창을 못 옮긴다.
+     */
+    if (key === "Tab" && !ctrlKey && !altKey) {
+      e.preventDefault();
+      apply(
+        shiftKey
+          ? outdentSelection(value, selectionStart, selectionEnd)
+          : indentSelection(value, selectionStart, selectionEnd)
+      );
+      return;
+    }
+
+    /*
+     * Enter 목록 이어쓰기.
+     *
+     * 🛑 전 판은 `- ` **하나만** 보고 들여쓰기를 버렸다. 그래서 중첩 목록에서
+     *    Enter 를 치면 맨 왼쪽으로 튀어나왔고, `*`, `+`, 번호 목록, 체크박스는
+     *    아예 이어지지 않았다. Tab 으로 중첩을 만들 수 있게 됐으니 이쪽도
+     *    같이 맞춘다 - 들여쓸 수는 있는데 다음 줄이 안 따라오면 반쪽이다.
+     */
+    if (key === "Enter" && !ctrlKey && !altKey && !shiftKey
+        && selectionStart === selectionEnd) {
+      const res = continueList(value, selectionStart);
+      if (res) {
         e.preventDefault();
-        const before = value.substring(0, selectionStart - 2);
-        const after  = value.substring(selectionStart);
-        applyContent(`${before}${after}`);
-        setTimeout(() => { e.target.selectionStart = e.target.selectionEnd = before.length; }, 0);
-      } else if (line.startsWith("- ")) {
-        e.preventDefault();
-        const before = value.substring(0, selectionStart);
-        const after  = value.substring(selectionStart);
-        applyContent(`${before}\n- ${after}`);
-        setTimeout(() => { e.target.selectionStart = e.target.selectionEnd = selectionStart + 3; }, 0);
+        apply(res);
       }
     }
   };
@@ -550,6 +590,8 @@ const Editor = () => {
                 ["Ctrl + K",          t("shortcut.link")],
                 ["Ctrl + H",          t("shortcut.heading")],
                 ["Ctrl + Shift + M",  t("shortcut.codeBlock")],
+                ["Tab",               t("shortcut.indent")],
+                ["Shift + Tab",       t("shortcut.outdent")],
                 ["Ctrl + S",          t("shortcut.save")],
                 ["Ctrl + Z",          t("shortcut.undo")],
                 ["Alt + H",           t("shortcut.openGuide")],

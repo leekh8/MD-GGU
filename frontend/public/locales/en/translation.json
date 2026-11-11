@@ -90,6 +90,8 @@
   "shortcut.link": "Insert link",
   "shortcut.heading": "Heading",
   "shortcut.codeBlock": "Code block",
+  "shortcut.indent": "Indent list item",
+  "shortcut.outdent": "Outdent list item",
   "shortcut.save": "Save as document",
   "shortcut.undo": "Undo",
   "shortcut.openGuide": "Open shortcut guide",
