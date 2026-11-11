@@ -181,12 +181,23 @@ Start Command  npm run serve -- --host 0.0.0.0 --port $PORT
 운영용으로 만든 것이 아니라고 적어 둔 것이라 **임시 방편**이다. Docker 쪽으로
 돌리는 것이 맞고, 그러면 위 nginx 2단계가 그대로 쓰인다.
 
-🛑 점검은 설정 화면이 아니라 **내려오는 HTML** 로 한다. 개발 서버면 이것이 잡힌다.
+🛑 점검은 설정 화면이 아니라 **내려오는 HTML 본문**으로 한다.
 
 ```bash
-curl -s https://mdggu-front.onrender.com/ | grep -c "@vite/client"   # 0 이어야 한다
-curl -s -o /dev/null -w "%{http_code}\n" https://mdggu-front.onrender.com/@vite/client   # 404 여야 한다
+# 개발 서버면 이 셋이 HTML 에 박혀 있다. 전부 0 이어야 한다
+curl -s https://mdggu-front.onrender.com/ | grep -c "@vite/client"
+curl -s https://mdggu-front.onrender.com/ | grep -c "react-refresh"
+curl -s https://mdggu-front.onrender.com/ | grep -c "src/index.jsx"
+
+# 운영 빌드면 해시가 박힌 자산을 가리킨다. 1 이상이어야 한다
+curl -s https://mdggu-front.onrender.com/ | grep -coE "assets/[A-Za-z0-9._-]+"
 ```
+
+🛑 **상태 코드로 가리면 안 된다.** `/@vite/client` 가 404 인지 보는 것은 틀린
+점검이다. nginx 의 SPA 되돌림(`try_files ... /index.html`)이 **없는 경로마다
+index.html 을 200 으로** 주기 때문에, 개발 서버를 내린 뒤에도 그 경로는 계속
+200 이다. 실제로 2026-11-11 에 그렇게 적어 뒀다가 바로잡았다. 가짜 경로 셋을
+넣어 보면 전부 `200 text/html` 로 같이 나온다.
 
 ### 글꼴
 
