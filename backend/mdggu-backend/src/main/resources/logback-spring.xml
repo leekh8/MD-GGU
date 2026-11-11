@@ -10,12 +10,36 @@
         </encoder>
     </appender>
 
-    <!-- 로그 파일에 로그 출력 -->
+    <!-- 로그 파일에 로그 출력
+
+         🛑 **쓸 자리를 설정으로 받는다** (2026-11-11).
+            전에는 `logs/mdggu.log` 로 **상대 경로**가 박혀 있었다. 컨테이너에서
+            작업 폴더가 `/app` 이고 그 폴더 주인이 root 라, root 가 아닌
+            사용자로 돌리면 `/app/logs` 를 만들 수 없다. 그러면 Logback 이
+            설정 오류로 터지고 **앱이 기동도 못 한다.**
+
+              ERROR RollingFileAppender[FILE] - Failed to create parent
+                    directories for [/app/logs/mdggu.log]
+              IllegalStateException: Logback configuration error detected
+
+            로그를 못 쓰는 것으로 끝나지 않고 앱 전체가 죽는다. Logback 은
+            설정 오류를 치명으로 다룬다.
+
+         🛑 **컨테이너에서는 이 파일이 쓸모가 없다.** Render 는 stdout 을 모아
+            보여 주고, 컨테이너는 다시 뜰 때마다 파일이 사라진다. `maxHistory`
+            30일은 몇 시간 사는 컨테이너에서 뜻이 없다. 그래서 남는 것은
+            「터질 자리 하나」뿐이다.
+
+            지금은 `LOG_DIR` 로 자리를 받고 Dockerfile 이 쓸 수 있는 폴더를
+            만들어 준다. **다음 걸음**은 이 appender 를 `<springProfile>` 로
+            감싸 컨테이너에서는 아예 끄는 것이다(로컬만 파일로 남긴다).
+            지금 하지 않은 까닭은 이 기계에서 앱을 띄울 수 없어 XML 구조
+            변경을 확인할 길이 없기 때문이다. 기동이 먼저다. -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/mdggu.log</file>
+        <file>${LOG_DIR:-logs}/mdggu.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 매일 새로운 로그 파일 생성 -->
-            <fileNamePattern>logs/mdggu.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_DIR:-logs}/mdggu.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- 로그 파일 최대 30개 보관 -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>

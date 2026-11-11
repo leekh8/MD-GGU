@@ -40,7 +40,31 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # 🛑 루트로 돌리지 않는다. 터지는 길이 있을 때 피해 범위가 달라진다.
-RUN useradd --system --create-home --shell /usr/sbin/nologin spring
+#
+# 🛑 **그런데 루트를 벗어나면 쓸 자리를 같이 줘야 한다.** 2026-11-11 에
+#    `USER spring` 만 넣고 배포했다가 앱이 기동도 못 했다. `logback-spring.xml`
+#    이 상대 경로 `logs/mdggu.log` 에 쓰려 하는데 작업 폴더 `/app` 주인이
+#    root 였다.
+#
+#      ERROR RollingFileAppender[FILE] - Failed to create parent directories
+#            for [/app/logs/mdggu.log]
+#      IllegalStateException: Logback configuration error detected
+#
+#    Logback 은 설정 오류를 치명으로 다룬다. 즉 **로그를 못 쓰는 것으로
+#    끝나지 않고 앱 전체가 죽는다.** 빌드는 통과하고 기동에서만 죽으니
+#    빌드 로그만 보면 성공으로 보인다.
+#
+#    권한을 낮추는 변경은 「무엇을 쓰고 있었나」를 같이 봐야 한다.
+RUN useradd --system --create-home --shell /usr/sbin/nologin spring \
+    && mkdir -p /app/logs \
+    && chown -R spring:spring /app
+
+# 로그 파일 자리. logback-spring.xml 이 `${LOG_DIR:-logs}` 로 읽는다.
+# 🛑 컨테이너에서 이 파일은 다시 뜰 때마다 사라진다. 실제로 보는 것은
+#    stdout 이고 Render 가 그것을 모은다. 여기 파일은 기동을 막지 않기
+#    위해 자리만 내준 것이다.
+ENV LOG_DIR=/app/logs
+
 USER spring
 
 COPY --from=builder /app/build/libs/*.jar app.jar
