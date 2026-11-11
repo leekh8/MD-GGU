@@ -31,6 +31,23 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// 🛑 **plain jar 를 끈다.** Spring Boot 2.5 부터 `jar` 과 `bootJar` 가 둘 다
+//    돌아서 `build/libs/` 에 두 파일이 생긴다.
+//        mdggu-backend-1.0-SNAPSHOT.jar         (실행 가능, bootJar)
+//        mdggu-backend-1.0-SNAPSHOT-plain.jar   (클래스만, 실행 불가)
+//
+//    Dockerfile 이 `COPY --from=builder /app/build/libs/*.jar app.jar` 로
+//    받는데, 글로브가 **둘**을 잡으면 Docker 가 거부한다.
+//      "When using COPY with more than one source file,
+//       the destination must be a directory and end with a /"
+//    그러면 빌드가 거기서 죽는다. 2026-11-11 에 Render 의 MDGGU-back 이
+//    Failed deploy 였던 원인 중 하나다.
+//
+//    plain jar 는 이 서비스에서 쓸 일이 없다 (라이브러리로 쓰지 않는다).
+jar {
+    enabled = false
+}
+
 bootRun {
     systemProperties = System.properties
     doFirst {

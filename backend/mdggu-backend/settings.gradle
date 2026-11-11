@@ -1,0 +1,5 @@
+// 🛑 이 파일이 없으면 Gradle 이 **폴더 이름**을 프로젝트 이름으로 쓴다.
+//    Dockerfile 이 `WORKDIR /app` 이라 산출물이 `app-1.0-SNAPSHOT.jar` 가 되고,
+//    로컬에서는 `mdggu-backend-1.0-SNAPSHOT.jar` 가 된다. 같은 저장소인데 jar
+//    이름이 환경마다 달라지면 `COPY` 와 실행 명령을 거기에 맞출 수 없다.
+rootProject.name = 'mdggu-backend'
